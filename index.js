@@ -58,9 +58,9 @@ function Field (name, initialValue, config, parentContext) {
         value: newValue,
       };
 
-      if (context.emit) {
-        context.batchEmit(event.path, Object.assign({}, event));
-      }
+      if (context.emit) context.emit('change', Object.assign({}, event));
+      if (context.batchEmit) context.batchEmit(event.path, Object.assign({}, event));
+
       value = newValue;
     }
   });
@@ -78,8 +78,8 @@ function Field (name, initialValue, config, parentContext) {
   });
 }
 
-function SliderField (name, initialValue, config, parentContext) {
-  if (!(this instanceof SliderField)) return new SliderField(name, initialValue, parentContext);
+function Slider (name, initialValue, config, parentContext) {
+  if (!(this instanceof Slider)) return new Slider(name, initialValue, parentContext);
 
   initialValue = initialValue === undefined ? 0 : initialValue;
   config = config || {};
@@ -96,34 +96,49 @@ function SliderField (name, initialValue, config, parentContext) {
   this.step = step;
 }
 
-function ColorField (name, initialValue, config, parentContext) {
-  if (!(this instanceof ColorField)) return new ColorField(name, initialValue, parentContext);
+function Rangeslider (name, initialValue, config, parentContext) {
+  if (!(this instanceof Rangeslider)) return new Rangeslider(name, initialValue, parentContext);
+
+  initialValue = initialValue === undefined ? 0 : initialValue;
+  config = config || {};
+
+  Field.call(this, name, initialValue, config, parentContext);
+
+  var min = config.min === undefined ? Math.min(initialValue, 0) : config.min;
+  var max = config.max === undefined ? Math.max(initialValue, 1) : config.max;
+  var step = config.step === undefined ? 1 : config.step;
+
+  this.type = 'rangeslider'
+  this.min = min;
+  this.max = max;
+  this.step = step;
+}
+
+function Color (name, initialValue, config, parentContext) {
+  if (!(this instanceof Color)) return new Color(name, initialValue, parentContext);
 
   initialValue = initialValue === undefined ? '#ffffff' : initialValue;
-  config = config || {};
 
   Field.call(this, name, initialValue, config, parentContext);
 
-  this.type = 'text'
+  this.type = 'color'
 }
 
-function TextField (name, initialValue, config, parentContext) {
-  if (!(this instanceof TextField)) return new TextField(name, initialValue, parentContext);
+function TextInput (name, initialValue, config, parentContext) {
+  if (!(this instanceof TextInput)) return new TextInput(name, initialValue, parentContext);
 
   initialValue = initialValue === undefined ? '' : initialValue;
-  config = config || {};
 
   Field.call(this, name, initialValue, config, parentContext);
 
-  this.type = 'text'
+  this.type = 'textinput'
 }
 
 
-function CheckboxField (name, initialValue, config, parentContext) {
-  if (!(this instanceof CheckboxField)) return new CheckboxField(name, initialValue, parentContext);
+function Checkbox (name, initialValue, config, parentContext) {
+  if (!(this instanceof Checkbox)) return new Checkbox(name, initialValue, parentContext);
 
   initialValue = initialValue === undefined ? true : !!initialValue;
-  config = config || {};
 
   Field.call(this, name, initialValue, config, parentContext);
 
@@ -143,13 +158,13 @@ function constructField (fieldName, fieldValue, parentContext) {
       fieldValue.name = fieldName;
       return fieldValue;
     case 'color':
-      return new ColorField(fieldName, fieldValue, {}, parentContext);
+      return new Color(fieldName, fieldValue, {}, parentContext);
     case 'string':
-      return new TextField(fieldName, fieldValue, {}, parentContext);
+      return new TextInput(fieldName, fieldValue, {}, parentContext);
     case 'number':
-      return new SliderField(fieldName, fieldValue, {}, parentContext);
+      return new Slider(fieldName, fieldValue, {}, parentContext);
     case 'boolean':
-      return new CheckboxField(fieldName, fieldValue, {}, parentContext);
+      return new Checkbox(fieldName, fieldValue, {}, parentContext);
     case 'object':
       return new Section(fieldName, fieldValue, {}, parentContext);
     default:
@@ -220,9 +235,9 @@ function controls (fields, options) {
     var updateKeys = Object.keys(updates);
     for (var i = 0; i < updateKeys.length; i++) {
       var event = updates[updateKeys[i]];
-      events.emit('change:' + event.path, event);
+      events.emit('finishChange:' + event.path, event);
     }
-    events.emit('changes', updates);
+    events.emit('finishChanges', updates);
     updates = {};
     updateRaf = null;
   }
@@ -252,19 +267,23 @@ function controls (fields, options) {
 };
 
 controls.slider = function (value, opts) {
-  return new SliderField(null, value, opts, {});
+  return new Slider(null, value, opts, {});
+}
+
+controls.rangeslider = function (value, opts) {
+  return new Rangeslider(null, value, opts, {});
 }
 
 controls.text = function (value, opts) {
-  return new TextField(null, value, opts, {});
+  return new TextInput(null, value, opts, {});
 };
 
 controls.checkbox = function (value, opts) {
-  return new CheckboxField(null, value, opts, {});
+  return new Checkbox(null, value, opts, {});
 };
 
 controls.color = function (value, opts) {
-  return new ColorField(null, value, opts, {});
+  return new Color(null, value, opts, {});
 };
 
 controls.section = function (value, opts) {

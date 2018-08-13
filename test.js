@@ -113,7 +113,7 @@ test('controls', function (t) {
       var c = controls({foo: 5});
 
       var called = false;
-      c.$config.on('change:foo', function (event) {
+      c.$config.on('finishChange:foo', function (event) {
         t.equal(event.field, c.$field.foo);
         t.equal(event.path, 'foo');
         t.equal(event.oldValue, 5);
@@ -133,7 +133,7 @@ test('controls', function (t) {
       var c = controls({shape: {width: 120}});
 
       var called = false;
-      c.$config.on('change:shape.width', function (event) {
+      c.$config.on('finishChange:shape.width', function (event) {
         t.equal(event.field, c.$field.shape.width);
         t.equal(event.path, 'shape.width');
         t.equal(event.oldValue, 120);
@@ -153,7 +153,7 @@ test('controls', function (t) {
       var c = controls({foo: 5});
 
       var called = false;
-      c.$config.on('changes', function (updates) {
+      c.$config.on('finishChanges', function (updates) {
         t.equal(updates.foo.field, c.$field.foo);
         t.equal(updates.foo.path, 'foo');
         t.equal(updates.foo.value, 7);
@@ -173,7 +173,7 @@ test('controls', function (t) {
       var c = controls({shape: {width: 120}});
 
       var called = false;
-      c.$config.on('changes', function (updates) {
+      c.$config.on('finishChanges', function (updates) {
         t.equal(updates['shape.width'].value, 240);
         called = true;
       });
@@ -190,7 +190,7 @@ test('controls', function (t) {
       var c = controls({shape: {width: 320, height: 240}});
 
       var callCount = 0;
-      c.$config.on('changes', function (updates) {
+      c.$config.on('finishChanges', function (updates) {
         callCount++;
         t.equal(updates['shape.width'].oldValue, 320);
         t.equal(updates['shape.width'].value, 1024);

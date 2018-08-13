@@ -37,8 +37,8 @@ console.log(state.$field.shape.width)
 //      step: 1 }
 
 // Subscribing to batched events:
-state.$config.on('changes', function (changes) {
-  console.log('changes:', changes);
+state.$config.on('finishChanges', function (changes) {
+  console.log('finishChanges:', changes);
   // Once the updates below are applied, on the next tick this
   // function will be called with changes:
   //
@@ -60,8 +60,8 @@ state.$config.on('changes', function (changes) {
   // }
 });
 
-state.$config.on('change:shape.width', function (update) {
-  console.log('change:shape.width', update);
+state.$config.on('finishChange:shape.width', function (update) {
+  console.log('finishChange:shape.width', update);
 });
 
 state.shape.width = 400;
@@ -72,5 +72,3 @@ state.shape.height = 500;
 ## License
 
 &copy 2018 Ricky Reusser. MIT License.
-
-

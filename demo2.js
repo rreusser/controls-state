@@ -20,7 +20,7 @@ console.log(state.shape.height); // -> 480
 
 // Via the $field property, you can access objects directly
 console.log(state.$field.shape.width)
-// -> SliderField {
+// -> Slider {
 //      type: 'slider',
 //      name: 'width',
 //      min: 0,
@@ -35,14 +35,14 @@ state.$config.on('changes', function (changes) {
   //
   // changes = {
   //  'shape.width': {
-  //    field: SliderField { ... }
+  //    field: Slider { ... }
   //    name: 'width',
   //    path: 'shape.width',
   //    oldValue: 480,
   //    value: 500
   //  },
   //  'shape.height': {
-  //    field: SliderField { ... }
+  //    field: Slider { ... }
   //    name: 'height',
   //    path: 'shape.height',
   //    oldValue: 480,
