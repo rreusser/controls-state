@@ -14,4 +14,4 @@ function TextInput (name, initialValue, config, parentContext) {
   this.type = 'textinput'
 }
 
-
+TextInput.prototype = Object.create(Field.prototype);

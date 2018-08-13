@@ -22,3 +22,4 @@ function Rangeslider (name, initialValue, config, parentContext) {
   this.step = step;
 }
 
+Rangeslider.prototype = Object.create(Field.prototype);

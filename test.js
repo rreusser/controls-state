@@ -8,7 +8,7 @@ test('controls', function (t) {
       var s = controls.slider({value: 1})
       t.equal(s.path, null);
       var c = controls({foo: s});
-      t.equal(c.$field.foo.path, 'foo');
+      t.equal(c.$path.foo.path, 'foo');
       t.end();
     });
 
@@ -31,15 +31,15 @@ test('controls', function (t) {
 
     t.test('top level paths', function (t) {
       var c = controls({foo: 5, bar: 'test'});
-      t.equal(c.$field.foo.path, 'foo');
-      t.equal(c.$field.bar.path, 'bar');
+      t.equal(c.$path.foo.path, 'foo');
+      t.equal(c.$path.bar.path, 'bar');
       t.end();
     });
 
     t.test('nested paths', function (t) {
       var c = controls({foo: 5, shape: {size: {width: 480}}});
-      t.equal(c.$field.foo.path, 'foo');
-      t.equal(c.$field.shape.size.width.path, 'shape.size.width');
+      t.equal(c.$path.foo.path, 'foo');
+      t.equal(c.$path.shape.size.width.path, 'shape.size.width');
       t.end();
     });
   });
@@ -63,15 +63,15 @@ test('controls', function (t) {
   t.test('accessing controls', function (t) {
     t.test('accessing top level controls', function (t) {
       var c = controls({foo: 5, bar: 'test'});
-      t.equal(c.$field.foo.value, 5);
-      t.equal(c.$field.bar.value, 'test');
+      t.equal(c.$path.foo.value, 5);
+      t.equal(c.$path.bar.value, 'test');
       t.end();
     });
 
     t.test('accessing nested controls', function (t) {
       var c = controls({foo: 5, bar: {baz: 'test'}});
-      t.equal(c.$field.foo.value, 5);
-      t.equal(c.$field.bar.baz.value, 'test');
+      t.equal(c.$path.foo.value, 5);
+      t.equal(c.$path.bar.baz.value, 'test');
       t.end();
     });
   });
@@ -113,8 +113,8 @@ test('controls', function (t) {
       var c = controls({foo: 5});
 
       var called = false;
-      c.$config.onFinishChange('foo', function (event) {
-        t.equal(event.field, c.$field.foo);
+      c.$field.onFinishChange('foo', function (event) {
+        t.equal(event.field, c.$path.foo);
         t.equal(event.path, 'foo');
         t.equal(event.oldValue, 5);
         t.equal(event.value, 7);
@@ -133,8 +133,8 @@ test('controls', function (t) {
       var c = controls({shape: {width: 120}});
 
       var called = false;
-      c.$config.onFinishChange('shape.width', function (event) {
-        t.equal(event.field, c.$field.shape.width);
+      c.$field.onFinishChange('shape.width', function (event) {
+        t.equal(event.field, c.$path.shape.width);
         t.equal(event.path, 'shape.width');
         t.equal(event.oldValue, 120);
         t.equal(event.value, 240);
@@ -153,8 +153,8 @@ test('controls', function (t) {
       var c = controls({foo: 5});
 
       var called = false;
-      c.$config.onFinishChanges(function (updates) {
-        t.equal(updates.foo.field, c.$field.foo);
+      c.$field.onFinishChanges(function (updates) {
+        t.equal(updates.foo.field, c.$path.foo);
         t.equal(updates.foo.path, 'foo');
         t.equal(updates.foo.value, 7);
         t.equal(updates.foo.oldValue, 5);
@@ -173,7 +173,7 @@ test('controls', function (t) {
       var c = controls({shape: {width: 120}});
 
       var called = false;
-      c.$config.onFinishChanges(function (updates) {
+      c.$field.onFinishChanges(function (updates) {
         t.equal(updates['shape.width'].value, 240);
         called = true;
       });
@@ -190,7 +190,7 @@ test('controls', function (t) {
       var c = controls({shape: {width: 320, height: 240}});
 
       var callCount = 0;
-      c.$config.onFinishChanges(function (updates) {
+      c.$field.onFinishChanges(function (updates) {
         callCount++;
         t.equal(updates['shape.width'].oldValue, 320);
         t.equal(updates['shape.width'].value, 1024);

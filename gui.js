@@ -8,6 +8,20 @@ function createGui (state) {
   var render = preact.render;
   var Component = preact.Component;
 
+  var Section = createClass({
+    render: function () {
+      var field = this.props.field;
+      return h('fieldset', {
+        className: 'section',
+      }, [
+        h('label', null, field.name),
+        Object.keys(field.value).map(key =>
+          h(Control, {field: field.value.$path[key].$field})
+        )
+      ]);
+    }
+  });
+
   var Slider = createClass({
     componentDidMount: function () {
     },
@@ -33,8 +47,10 @@ function createGui (state) {
       switch(this.props.field.type) {
         case 'slider':
           return h(Slider, {field: this.props.field});
+        case 'section':
+          return h(Section, {field: this.props.field});
         default:
-          //throw new Error('Unknown field type, "'+this.props.field.type+'"');
+          throw new Error('Unknown field type, "'+this.props.field.type+'"');
       }
     }
   });
@@ -43,7 +59,7 @@ function createGui (state) {
     render: function () {
       return h('div', null,
         Object.keys(this.props.state).map(key =>
-          h(Control, {field: this.props.state.$field[key]})
+          h(Control, {field: this.props.state.$path[key].$field})
         )
       );
     }

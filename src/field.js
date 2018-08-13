@@ -11,14 +11,9 @@ function Field (name, initialValue, config, parentContext) {
 
   var context = parentContext ? Object.create(parentContext) : {};
 
-  Object.defineProperty(this, '$config', {
+  Object.defineProperty(this, '$field', {
     enumerable: false,
-    get: function () {
-      return context;
-    },
-    set: function (value) {
-      context = value;
-    }
+    value: this,
   });
 
   Object.defineProperty(this, 'value', {

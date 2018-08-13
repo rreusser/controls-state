@@ -22,3 +22,4 @@ function Slider (name, initialValue, config, parentContext) {
   this.step = step;
 }
 
+Slider.prototype = Object.create(Field.prototype);

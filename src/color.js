@@ -14,3 +14,4 @@ function Color (name, initialValue, config, parentContext) {
   this.type = 'color'
 }
 
+Color.prototype = Object.create(Field.prototype);

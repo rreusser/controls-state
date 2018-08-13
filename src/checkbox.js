@@ -13,3 +13,5 @@ function Checkbox (name, initialValue, config, parentContext) {
 
   this.type = 'checkbox'
 }
+
+Checkbox.prototype = Object.create(Field.prototype);

@@ -41,7 +41,7 @@ function constructField (fieldName, fieldValue, parentContext) {
       if (fieldValue.path) {
         throw new Error('You may only add an field to a set of controls once.');
       }
-      fieldValue.$config = Object.assign(Object.create(parentContext), fieldValue.context);
+      fieldValue.$field.context = Object.assign(Object.create(parentContext), fieldValue.context);
       fieldValue.name = fieldName;
       return fieldValue;
     case 'color':
@@ -67,8 +67,8 @@ function Section (name, inputFields, config, parentContext) {
   Field.call(this, name, value, this.context, parentContext);
   this.type = 'section';
 
-  Object.defineProperty(value, '$config', {enumerable: false, value: this});
-  Object.defineProperty(value, '$field', {enumerable: false, value: fields});
+  Object.defineProperty(value, '$field', {enumerable: false, value: this});
+  Object.defineProperty(value, '$path', {enumerable: false, value: fields});
 
   Object.defineProperty(this.context, 'path', {
     get: function () {

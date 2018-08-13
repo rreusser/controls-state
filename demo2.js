@@ -18,8 +18,8 @@ console.log('alpha:', state.alpha); // -> 0.5
 console.log('width:', state.shape.width); // -> 640
 console.log('shape.height:', state.shape.height); // -> 480
 
-// Via the $field property, you can access the underlying objects
-console.log(state.$field.shape.width)
+// Via the $path property, you can access the underlying objects
+console.log(state.$path.shape.width)
 // -> Slider {
 //      type: 'slider',
 //      name: 'width',
