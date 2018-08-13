@@ -1,6 +1,6 @@
 var controls = require('./');
 
-var state = controls({
+var state = window.state = controls({
   // It can try to infer types:
   background: '#ff0000',
   
