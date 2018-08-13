@@ -36,8 +36,14 @@ console.log(state.$field.shape.width)
 //      max: 640,
 //      step: 1 }
 
+// Subscribing to events as they're triggered. These may be triggered many times
+// per tick, depending on how often the values are modified programatically.
+state.$config.onChanges(function (changes) {
+  console.log('changes:', changes);
+});
+
 // Subscribing to batched events:
-state.$config.on('finishChanges', function (changes) {
+state.$config.onFinishChanges(function (changes) {
   console.log('finishChanges:', changes);
   // Once the updates below are applied, on the next tick this
   // function will be called with changes:
@@ -60,8 +66,8 @@ state.$config.on('finishChanges', function (changes) {
   // }
 });
 
-state.$config.on('finishChange:shape.width', function (update) {
-  console.log('finishChange:shape.width', update);
+state.$config.onFinishChange('shape.width', function (update) {
+  console.log('finishChange: shape.width', update);
 });
 
 state.shape.width = 400;
