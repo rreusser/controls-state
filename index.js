@@ -1,5 +1,8 @@
 'use strict';
 
+var EventEmitter = require('event-emitter')
+var raf = require('raf');
+
 var COLOR_REGEX = /(#(?:[0-9a-fA-F]{2,4}){2,4}|(#[0-9a-fA-F]{3})|(rgb|hsl)a?((-?\d+%?[,\s]+){2,3}\s*[\d.]+%?))/;
 
 function inferType (value) {
@@ -23,162 +26,271 @@ function inferType (value) {
       return 'object';
   }
 }
-/*
-function parseFields (fields) {
-  var fieldNames = Object.keys(fields);
-  return fieldNames.map(fieldName => {
-    var type = inferType(fields[fieldName])
-    console.log('fieldName, type:', fieldName, type);
-    return type;
-  });
-}
-*/
 
-function proxyValue (object) {
-  var container = {};
-  Object.defineProperty(object, 'value', {
+function Field (name, initialValue, parentContext) {
+  var value = initialValue;
+
+  var context = parentContext ? Object.create(parentContext) : {};
+
+  Object.defineProperty(this, '$config', {
+    enumerable: false,
     get: function () {
-      return container.value;
+      return context;
     },
     set: function (value) {
-      container.value = value;
+      context = value;
+    }
+  });
+
+  Object.defineProperty(this, 'value', {
+    get: function () {
+      return value;
+    },
+    set: function (newValue) {
+      var event = {
+        field: this,
+        path: this.path,
+        oldValue: value,
+        value: newValue,
+      };
+
+      if (context.emit) {
+        context.emit('change:' + event.path, Object.assign({}, event));
+        context.emit('change', Object.assign({}, event));
+        context.batchEmit(event.path, Object.assign({}, event));
+      }
+      value = newValue;
+    }
+  });
+
+  this.type = null;
+  this.name = name;
+
+  Object.defineProperty(this, 'path', {
+    enumerable: true,
+    get: function () {
+      var parentPath = (parentContext || {}).path;
+      if (!this.name) return null;
+      return (parentContext.path ? parentContext.path + '.' : '') + this.name;
     }
   });
 }
 
-function ColorField (initialValue) {
-  if (!(this instanceof ColorField)) return new ColorField(initialValue);
+function SliderField (name, initialValue, parentContext) {
+  if (!(this instanceof SliderField)) return new SliderField(name, initialValue, parentContext);
 
-  this.type = 'color';
+  var opts = {};
 
-  if (initialValue && !COLOR_REGEX.test(initialValue)) {
-    var opts = initialValue || {};
-    initialValue = opts.value || '#000000';
-  }
-
-  proxyValue(this);
-
-  this.value = initialValue;
-}
-
-function TextField (initialValue) {
-  if (!(this instanceof TextField)) return new TextField(initialValue);
-
-  this.type = 'text';
-
-  proxyValue(this);
-
-  this.value = initialValue;
-}
-
-function SliderField (initialValue) {
-  if (!(this instanceof SliderField)) return new SliderField(initialValue);
-
-  this.type = 'slider';
-
-  if (initialValue && typeof initialValue !== 'number') {
-    var opts = initialValue || {};
+  if (typeof initialValue === 'object') {
+    opts = initialValue;
     initialValue = opts.value === undefined ? 0 : opts.value;
+  } else {
+    initialValue = initialValue === undefined ? 0 : initialValue;
+    opts = opts || {};
   }
 
-  proxyValue(this);
+  Field.call(this, name, initialValue, parentContext);
 
-  this.value = initialValue;
+  var min = opts.min === undefined ? Math.min(initialValue, 0) : opts.min;
+  var max = opts.max === undefined ? Math.max(initialValue, 1) : opts.max;
+  var step = opts.step === undefined ? 1 : opts.step;
+
+  this.type = 'slider'
+  this.min = min;
+  this.max = max;
+  this.step = step;
 }
 
-function CheckboxField (initialValue) {
-  if (!(this instanceof CheckboxField)) return new CheckboxField(initialValue);
+function ColorField (name, initialValue, parentContext) {
+  if (!(this instanceof ColorField)) return new ColorField(name, initialValue, parentContext);
 
-  this.type = 'checkbox';
+  var opts = {};
 
-  if (initialValue && typeof initialValue !== 'boolean') {
-    var opts = initialValue || {};
+  if (typeof initialValue === 'object') {
+    opts = initialValue;
+    initialValue = opts.value === undefined ? '#ffffff' : opts.value;
+  } else {
+    initialValue = initialValue === undefined ? '#ffffff' : initialValue;
+    opts = opts || {};
+  }
+
+  Field.call(this, name, initialValue, parentContext);
+
+  this.type = 'text'
+}
+
+function TextField (name, initialValue, parentContext) {
+  if (!(this instanceof TextField)) return new TextField(name, initialValue, parentContext);
+
+  var opts = {};
+
+  if (typeof initialValue === 'object') {
+    opts = initialValue;
+    initialValue = opts.value === undefined ? '' : opts.value;
+  } else {
+    initialValue = initialValue === undefined ? '' : initialValue;
+    opts = opts || {};
+  }
+
+  Field.call(this, name, initialValue, parentContext);
+
+  this.type = 'text'
+}
+
+
+function CheckboxField (name, initialValue, parentContext) {
+  if (!(this instanceof CheckboxField)) return new CheckboxField(name, initialValue, parentContext);
+
+  var opts = {};
+
+  if (typeof initialValue === 'object') {
+    opts = initialValue;
     initialValue = opts.value === undefined ? true : !!opts.value;
+  } else {
+    initialValue = initialValue === undefined ? true : !!initialValue;
+    opts = opts || {};
   }
 
-  proxyValue(this);
+  Field.call(this, name, initialValue, parentContext);
 
-  this.value = initialValue;
+  this.type = 'checkbox'
 }
 
-function constructField (fieldValue, config) {
+function constructField (fieldName, fieldValue, parentContext) {
   switch(inferType(fieldValue)) {
     case 'colorfield':
     case 'textfield':
     case 'sliderfield':
     case 'checkboxfield':
+      if (fieldValue.path) {
+        throw new Error('You may only add an field to a set of controls once.');
+      }
+      fieldValue.$config = Object.assign(Object.create(parentContext), fieldValue.context);
+      fieldValue.name = fieldName;
       return fieldValue;
     case 'color':
-      return new ColorField(fieldValue);
+      return new ColorField(fieldName, fieldValue, parentContext);
     case 'string':
-      return new TextField(fieldValue);
+      return new TextField(fieldName, fieldValue, parentContext);
     case 'number':
-      return new SliderField(fieldValue);
+      return new SliderField(fieldName, fieldValue, parentContext);
     case 'boolean':
-      return new CheckboxField(fieldValue);
+      return new CheckboxField(fieldName, fieldValue, parentContext);
+    case 'object':
+      return new Folder(fieldName, fieldValue, parentContext);
     default:
       return null;
   }
 }
 
-function Folder (fields, config) {
-  Field.call(this, fields, config || {});
-  this.type = 'folder';
-}
+function Folder (name, inputFields, parentContext) {
+  var fields = {};
+  var fieldProxy = {};
+  var context = Object.create(parentContext);
 
-function Field (fields, config) {
-  var state = {};
+  Object.defineProperty(this, '$config', {enumerable: false, value: context});
+  Object.defineProperty(this, '$field', {enumerable: false, value: fieldProxy});
 
-  Object.keys(fields).forEach((fieldName) => {
-    var fieldValue = fields[fieldName];
+  context.type = 'folder';
 
-    var fieldObj = constructField(fields[fieldName], config);
-    var fieldConfig = config;
-
-    if (!fieldObj) {
-      fieldConfig = config[fieldName] = {};
-      fieldObj = new Folder(new Field(fieldValue, fieldConfig));
-      state[fieldName] = fieldObj;
-      config[fieldName] = fieldConfig;
-    } else {
-      state[fieldName] = fieldObj;
-      config[fieldName] = fieldObj;
+  Object.defineProperty(context, 'path', {
+    get: function () {
+      var parentPath = parentContext.path;
+      return (parentContext.path ? parentContext.path + '.' : '') + name;
     }
+  });
 
-    Object.defineProperty(this, fieldName, {
-      get: function () {
-        return state[fieldName].value;
-      },
-      set: function (value) {
-        state[fieldName].value = value;
-        return value;
-      }
-    });
+  Object.keys(inputFields).forEach((fieldName) => {
+    var field = fields[fieldName] = constructField(fieldName, inputFields[fieldName], context);
+
+    if (field instanceof Folder) {
+      // For folders, it needs to return the folder object with fancy getters and setters
+      Object.defineProperty(this, fieldName, {
+        enumerable: true,
+        value: fields[fieldName]
+      });
+
+      Object.defineProperty(fieldProxy, fieldName, {
+        enumerable: true,
+        value: fields[fieldName].$field
+      });
+    } else {
+      // For all other properties, it should return the value of the item itself
+      Object.defineProperty(this, fieldName, {
+        enumerable: true,
+        get: function () {
+          return field.value;
+        },
+        set: function (value) {
+          field.value = value;
+        }
+      });
+
+      Object.defineProperty(fieldProxy, fieldName, {
+        enumerable: true,
+        get: function () {
+          return field;
+        },
+      });
+    }
   });
 }
 
 function controls (fields, options) {
-  var config = {};
-  var field = new Field(fields, config);
-  Object.defineProperty(field, '$config', {
-    get: function () {
-      return config;
-    },
-    iterable: false,
-  });
+  var events = new EventEmitter();
 
-  return field;
+  var updates = {};
+  var updateRaf = null;
+
+  function emitUpdate () {
+    events.emit('batchedUpdate', updates);
+    updates = {};
+    updateRaf = null;
+  }
+
+  function batchEmit (path, event) {
+    var existingUpdate = updates[event.path];
+    if (existingUpdate) {
+      event.oldValue = existingUpdate.oldValue;
+    }
+    updates[path] = event;
+
+    if (!updateRaf) updateRaf = raf(emitUpdate);
+  }
+
+  var rootContext = {
+    on: events.on.bind(events),
+    off: events.off.bind(events),
+    emit: events.emit.bind(events),
+    batchEmit: batchEmit,
+    parentContext: null,
+    path: ''
+  };
+
+  var folder = new Folder('', fields, rootContext);
+
+  return folder;
 };
 
-controls.slider = SliderField;
-controls.text = TextField;
-controls.checkbox = CheckboxField;
-controls.color = ColorField;
-controls.folder = Folder;
+controls.slider = function (value) {
+  return new SliderField(null, value, {});
+}
 
-controls.section = function (obj) {
-  return obj;
+controls.text = function (value) {
+  return new TextField(null, value, {});
 };
+
+controls.checkbox = function (value) {
+  return new CheckboxField(null, value, {});
+};
+
+controls.color = function (value) {
+  return new ColorField(null, value, {});
+};
+
+controls.folder = function (value) {
+  return new Folder(null, value, {});
+}
 
 module.exports = controls;
 

@@ -32,6 +32,7 @@ var panel = controls({
   bgcolor: controls.color({
     value: '#000'
   }),
+  fgcolor: controls.color(),
   running: controls.checkbox({
     value: false,
   })
@@ -46,9 +47,7 @@ console.log('controls.shape.width:', panel.shape.width);
 console.log('controls.shape.height:', panel.shape.height);
 console.log('controls.resolution:', panel.resolution);
 console.log('controls.bgcolor:', panel.bgcolor);
+console.log('controls.fgcolor:', panel.fgcolor);
 console.log('controls.running:', panel.running);
 console.log('controls.contents.width:', panel.contents.width);
 console.log('controls.contents.height:', panel.contents.height);
-
-console.log('panel.$config.shape:', panel.$config.shape.width);
-
