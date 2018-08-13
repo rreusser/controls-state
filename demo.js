@@ -29,13 +29,9 @@ var panel = controls({
     max: 10,
     step: 1
   }),
-  bgcolor: controls.color({
-    value: '#000'
-  }),
+  bgcolor: controls.color('#000'),
   fgcolor: controls.color(),
-  running: controls.checkbox({
-    value: false,
-  })
+  running: controls.checkbox(false),
 });
 
 console.log('controls.color:', panel.color);

@@ -27,7 +27,11 @@ function inferType (value) {
   }
 }
 
-function Field (name, initialValue, parentContext) {
+function Field (name, initialValue, config, parentContext) {
+  if (/\./.test(name)) {
+    throw new Error('Field names may not contain a period');
+  }
+
   var value = initialValue;
 
   var context = parentContext ? Object.create(parentContext) : {};
@@ -55,8 +59,6 @@ function Field (name, initialValue, parentContext) {
       };
 
       if (context.emit) {
-        context.emit('change:' + event.path, Object.assign({}, event));
-        context.emit('change', Object.assign({}, event));
         context.batchEmit(event.path, Object.assign({}, event));
       }
       value = newValue;
@@ -71,29 +73,22 @@ function Field (name, initialValue, parentContext) {
     get: function () {
       var parentPath = (parentContext || {}).path;
       if (!this.name) return null;
-      return (parentContext.path ? parentContext.path + '.' : '') + this.name;
+      return (parentPath ? parentPath + '.' : '') + this.name;
     }
   });
 }
 
-function SliderField (name, initialValue, parentContext) {
+function SliderField (name, initialValue, config, parentContext) {
   if (!(this instanceof SliderField)) return new SliderField(name, initialValue, parentContext);
 
-  var opts = {};
+  initialValue = initialValue === undefined ? 0 : initialValue;
+  config = config || {};
 
-  if (typeof initialValue === 'object') {
-    opts = initialValue;
-    initialValue = opts.value === undefined ? 0 : opts.value;
-  } else {
-    initialValue = initialValue === undefined ? 0 : initialValue;
-    opts = opts || {};
-  }
+  Field.call(this, name, initialValue, config, parentContext);
 
-  Field.call(this, name, initialValue, parentContext);
-
-  var min = opts.min === undefined ? Math.min(initialValue, 0) : opts.min;
-  var max = opts.max === undefined ? Math.max(initialValue, 1) : opts.max;
-  var step = opts.step === undefined ? 1 : opts.step;
+  var min = config.min === undefined ? Math.min(initialValue, 0) : config.min;
+  var max = config.max === undefined ? Math.max(initialValue, 1) : config.max;
+  var step = config.step === undefined ? 1 : config.step;
 
   this.type = 'slider'
   this.min = min;
@@ -101,57 +96,36 @@ function SliderField (name, initialValue, parentContext) {
   this.step = step;
 }
 
-function ColorField (name, initialValue, parentContext) {
+function ColorField (name, initialValue, config, parentContext) {
   if (!(this instanceof ColorField)) return new ColorField(name, initialValue, parentContext);
 
-  var opts = {};
+  initialValue = initialValue === undefined ? '#ffffff' : initialValue;
+  config = config || {};
 
-  if (typeof initialValue === 'object') {
-    opts = initialValue;
-    initialValue = opts.value === undefined ? '#ffffff' : opts.value;
-  } else {
-    initialValue = initialValue === undefined ? '#ffffff' : initialValue;
-    opts = opts || {};
-  }
-
-  Field.call(this, name, initialValue, parentContext);
+  Field.call(this, name, initialValue, config, parentContext);
 
   this.type = 'text'
 }
 
-function TextField (name, initialValue, parentContext) {
+function TextField (name, initialValue, config, parentContext) {
   if (!(this instanceof TextField)) return new TextField(name, initialValue, parentContext);
 
-  var opts = {};
+  initialValue = initialValue === undefined ? '' : initialValue;
+  config = config || {};
 
-  if (typeof initialValue === 'object') {
-    opts = initialValue;
-    initialValue = opts.value === undefined ? '' : opts.value;
-  } else {
-    initialValue = initialValue === undefined ? '' : initialValue;
-    opts = opts || {};
-  }
-
-  Field.call(this, name, initialValue, parentContext);
+  Field.call(this, name, initialValue, config, parentContext);
 
   this.type = 'text'
 }
 
 
-function CheckboxField (name, initialValue, parentContext) {
+function CheckboxField (name, initialValue, config, parentContext) {
   if (!(this instanceof CheckboxField)) return new CheckboxField(name, initialValue, parentContext);
 
-  var opts = {};
+  initialValue = initialValue === undefined ? true : !!initialValue;
+  config = config || {};
 
-  if (typeof initialValue === 'object') {
-    opts = initialValue;
-    initialValue = opts.value === undefined ? true : !!opts.value;
-  } else {
-    initialValue = initialValue === undefined ? true : !!initialValue;
-    opts = opts || {};
-  }
-
-  Field.call(this, name, initialValue, parentContext);
+  Field.call(this, name, initialValue, config, parentContext);
 
   this.type = 'checkbox'
 }
@@ -169,21 +143,21 @@ function constructField (fieldName, fieldValue, parentContext) {
       fieldValue.name = fieldName;
       return fieldValue;
     case 'color':
-      return new ColorField(fieldName, fieldValue, parentContext);
+      return new ColorField(fieldName, fieldValue, {}, parentContext);
     case 'string':
-      return new TextField(fieldName, fieldValue, parentContext);
+      return new TextField(fieldName, fieldValue, {}, parentContext);
     case 'number':
-      return new SliderField(fieldName, fieldValue, parentContext);
+      return new SliderField(fieldName, fieldValue, {}, parentContext);
     case 'boolean':
-      return new CheckboxField(fieldName, fieldValue, parentContext);
+      return new CheckboxField(fieldName, fieldValue, {}, parentContext);
     case 'object':
-      return new Folder(fieldName, fieldValue, parentContext);
+      return new Folder(fieldName, fieldValue, {}, parentContext);
     default:
       return null;
   }
 }
 
-function Folder (name, inputFields, parentContext) {
+function Folder (name, inputFields, config, parentContext) {
   var fields = {};
   var fieldProxy = {};
   var context = Object.create(parentContext);
@@ -243,7 +217,12 @@ function controls (fields, options) {
   var updateRaf = null;
 
   function emitUpdate () {
-    events.emit('batchedUpdate', updates);
+    var updateKeys = Object.keys(updates);
+    for (var i = 0; i < updateKeys.length; i++) {
+      var event = updates[updateKeys[i]];
+      events.emit('change:' + event.path, event);
+    }
+    events.emit('changes', updates);
     updates = {};
     updateRaf = null;
   }
@@ -267,29 +246,29 @@ function controls (fields, options) {
     path: ''
   };
 
-  var folder = new Folder('', fields, rootContext);
+  var folder = new Folder('', fields, null, rootContext);
 
   return folder;
 };
 
-controls.slider = function (value) {
-  return new SliderField(null, value, {});
+controls.slider = function (value, opts) {
+  return new SliderField(null, value, opts, {});
 }
 
-controls.text = function (value) {
-  return new TextField(null, value, {});
+controls.text = function (value, opts) {
+  return new TextField(null, value, opts, {});
 };
 
-controls.checkbox = function (value) {
-  return new CheckboxField(null, value, {});
+controls.checkbox = function (value, opts) {
+  return new CheckboxField(null, value, opts, {});
 };
 
-controls.color = function (value) {
-  return new ColorField(null, value, {});
+controls.color = function (value, opts) {
+  return new ColorField(null, value, opts, {});
 };
 
-controls.folder = function (value) {
-  return new Folder(null, value, {});
+controls.folder = function (value, opts) {
+  return new Folder(null, value, opts, {});
 }
 
 module.exports = controls;

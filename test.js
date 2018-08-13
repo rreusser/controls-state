@@ -22,6 +22,13 @@ test('controls', function (t) {
   });
 
   t.test('paths', function (t) {
+    t.test('fields with a dot throw', function (t) {
+      t.throws(function () {
+        var c = controls({'foo.bar': 5});
+      }, /may not contain a period/);
+      t.end();
+    });
+
     t.test('top level paths', function (t) {
       var c = controls({foo: 5, bar: 'test'});
       t.equal(c.$field.foo.path, 'foo');
@@ -176,7 +183,7 @@ test('controls', function (t) {
       var c = controls({shape: {width: 320, height: 240}});
 
       var callCount = 0;
-      c.$config.on('batchedUpdate', function (updates) {
+      c.$config.on('finishChanges', function (updates) {
         callCount++;
         t.equal(updates['shape.width'].oldValue, 320);
         t.equal(updates['shape.width'].value, 1024);
@@ -199,8 +206,7 @@ test('controls', function (t) {
 
   t.test('slider field', function (t) {
     t.test('creation', function (t) {
-      var slider = controls.slider({
-        value: 5,
+      var slider = controls.slider(5, {
         min: -1,
         max: 10,
         step: 2,
