@@ -14,11 +14,11 @@ var state = window.state = controls({
   }
 });
 
-console.log(state.alpha); // -> 0.5
-console.log(state.shape.width); // -> 640
-console.log(state.shape.height); // -> 480
+console.log('alpha:', state.alpha); // -> 0.5
+console.log('width:', state.shape.width); // -> 640
+console.log('shape.height:', state.shape.height); // -> 480
 
-// Via the $field property, you can access objects directly
+// Via the $field property, you can access the underlying objects
 console.log(state.$field.shape.width)
 // -> Slider {
 //      type: 'slider',
@@ -28,8 +28,8 @@ console.log(state.$field.shape.width)
 //      step: 1 }
 
 // Subscribing to batched events:
-state.$config.on('changes', function (changes) {
-  console.log('changes:', changes);
+state.$config.onFinishChanges(function (changes) {
+  console.log('finish changes:', changes);
   // Once the updates below are applied, on the next tick this
   // function will be called with changes:
   //
@@ -51,8 +51,16 @@ state.$config.on('changes', function (changes) {
   // }
 });
 
-state.$config.on('change:shape.width', function (update) {
-  console.log('change:shape.width', update);
+state.$config.onFinishChange('shape.width', function (update) {
+  console.log('finish change: shape.width', update);
+});
+
+state.$config.onChange('shape.width', function (update) {
+  console.log('change shape.width', update);
+});
+
+state.$config.onChanges(function (update) {
+  console.log('changes:', update);
 });
 
 state.shape.width = 400;

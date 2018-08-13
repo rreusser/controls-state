@@ -23,7 +23,6 @@ function Field (name, initialValue, config, parentContext) {
 
   Object.defineProperty(this, 'value', {
     get: function () {
-      console.log('get value:', value);
       return value;
     },
     set: function (newValue) {
@@ -34,7 +33,13 @@ function Field (name, initialValue, config, parentContext) {
         value: newValue,
       };
 
-      if (context.emit) context.emit('change', Object.assign({}, event));
+      if (context.emit) {
+        context.emit('change:' + event.path, Object.assign({}, event));
+
+        var changes = {};
+        changes[event.path] = Object.assign({}, event);
+        context.emit('changes', changes);
+      }
       if (context.batchEmit) context.batchEmit(event.path, Object.assign({}, event));
 
       value = newValue;
@@ -54,3 +59,30 @@ function Field (name, initialValue, config, parentContext) {
   });
 }
 
+Field.prototype = {
+  onFinishChange: function (path, callback) {
+    return this.context.on('finishChange:' + path, callback);
+  },
+  offFinishChange: function (path, callback) {
+    return this.context.off('finishChange:' + path, callback);
+  },
+  onChange: function (path, callback) {
+    return this.context.on('change:' + path, callback);
+  },
+  offChange: function (path, callback) {
+    return this.context.off('change:' + path, callback);
+  },
+
+  onFinishChanges: function (callback) {
+    return this.context.on('finishChanges', callback);
+  },
+  offFinishChanges: function (callback) {
+    return this.context.off('finishChanges', callback);
+  },
+  onChanges: function (callback) {
+    return this.context.on('changes', callback);
+  },
+  offChanges: function (callback) {
+    return this.context.off('changes', callback);
+  },
+};

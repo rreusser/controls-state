@@ -38,24 +38,8 @@ function controls (fields, options) {
   }
 
   var rootContext = {
-    onFinishChange: function (path, callback) {
-      events.on('finishChange:' + path, callback);
-      return function () {
-        events.off('finishChanges:' + path, callback);
-      };
-    },
-    offFinishChange: function (path, callback) {
-      return events.on('finishChange:' + path, callback);
-    },
-    onFinishChanges: function (callback) {
-      events.on('finishChanges', callback);
-      return function () {
-        events.off('finishChanges', callback);
-      };
-    },
-    offFinishChanges: function (path, callback) {
-      return events.on('finishChanges', callback);
-    },
+    on: events.on.bind(events),
+    off: events.off.bind(events),
     emit: events.emit.bind(events),
     batchEmit: batchEmit,
     parentContext: null,

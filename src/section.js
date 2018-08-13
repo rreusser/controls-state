@@ -61,16 +61,16 @@ function constructField (fieldName, fieldValue, parentContext) {
 
 function Section (name, inputFields, config, parentContext) {
   var fields = {};
-  var context = Object.create(parentContext);
+  this.context = Object.create(parentContext);
 
-  this.value = {};
+  var value = {};
+  Field.call(this, name, value, this.context, parentContext);
+  this.type = 'section';
 
-  Object.defineProperty(this.value, '$config', {enumerable: false, value: this});
-  Object.defineProperty(this.value, '$field', {enumerable: false, value: fields});
+  Object.defineProperty(value, '$config', {enumerable: false, value: this});
+  Object.defineProperty(value, '$field', {enumerable: false, value: fields});
 
-  context.type = 'section';
-
-  Object.defineProperty(context, 'path', {
+  Object.defineProperty(this.context, 'path', {
     get: function () {
       var parentPath = parentContext.path;
       return (parentContext.path ? parentContext.path + '.' : '') + name;
@@ -78,11 +78,11 @@ function Section (name, inputFields, config, parentContext) {
   });
 
   Object.keys(inputFields).forEach((fieldName) => {
-    var field = fields[fieldName] = constructField(fieldName, inputFields[fieldName], context);
+    var field = fields[fieldName] = constructField(fieldName, inputFields[fieldName], this.context);
 
     if (field instanceof Section) {
       // For folders, it needs to return the section object with fancy getters and setters
-      Object.defineProperty(this.value, fieldName, {
+      Object.defineProperty(value, fieldName, {
         enumerable: true,
         value: fields[fieldName].value
       });
@@ -93,7 +93,7 @@ function Section (name, inputFields, config, parentContext) {
       });
     } else {
       // For all other properties, it should return the value of the item itself
-      Object.defineProperty(this.value, fieldName, {
+      Object.defineProperty(value, fieldName, {
         enumerable: true,
         get: function () {
           return field.value;
@@ -113,3 +113,4 @@ function Section (name, inputFields, config, parentContext) {
   });
 }
 
+Section.prototype = Object.create(Field.prototype);

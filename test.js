@@ -108,7 +108,6 @@ test('controls', function (t) {
     });
   });
 
-  /*
   t.test('events', function (t) {
     t.test('emits change:path events', function (t) {
       var c = controls({foo: 5});
@@ -210,7 +209,6 @@ test('controls', function (t) {
       });
     });
   });
-  */
 
   t.test('slider field', function (t) {
     t.test('creation', function (t) {
