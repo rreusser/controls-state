@@ -122,9 +122,11 @@ test('controls', function (t) {
       });
 
       c.foo = 7;
-      t.equal(called, true);
 
-      t.end();
+      raf(function () {
+        t.equal(called, true);
+        t.end();
+      });
     });
     
     t.test('emits nested change:path events', function (t) {
@@ -140,50 +142,55 @@ test('controls', function (t) {
       });
 
       c.shape.width = 240;
-      t.equal(called, true);
 
-      t.end();
+      raf(function (){ 
+        t.equal(called, true);
+        t.end();
+      });
     });
 
     t.test('emits change events', function (t) {
       var c = controls({foo: 5});
 
       var called = false;
-      c.$config.on('change', function (event) {
-        t.equal(event.field, c.$field.foo);
-        t.equal(event.path, 'foo');
-        t.equal(event.value, 7);
-        t.equal(event.oldValue, 5);
+      c.$config.on('changes', function (updates) {
+        t.equal(updates.foo.field, c.$field.foo);
+        t.equal(updates.foo.path, 'foo');
+        t.equal(updates.foo.value, 7);
+        t.equal(updates.foo.oldValue, 5);
         called = true;
       });
 
       c.foo = 7;
-      t.equal(called, true);
 
-      t.end();
+      raf(function () {
+        t.equal(called, true);
+        t.end();
+      });
     });
     
     t.test('emits nested change events', function (t) {
       var c = controls({shape: {width: 120}});
 
       var called = false;
-      c.$config.on('change', function (event) {
-        t.equal(event.path, 'shape.width');
-        t.equal(event.value, 240);
+      c.$config.on('changes', function (updates) {
+        t.equal(updates['shape.width'].value, 240);
         called = true;
       });
 
       c.shape.width = 240;
-      t.equal(called, true);
 
-      t.end();
+      raf(function () {
+        t.equal(called, true);
+        t.end();
+      });
     });
 
     t.test('emits batched updates', function (t) {
       var c = controls({shape: {width: 320, height: 240}});
 
       var callCount = 0;
-      c.$config.on('finishChanges', function (updates) {
+      c.$config.on('changes', function (updates) {
         callCount++;
         t.equal(updates['shape.width'].oldValue, 320);
         t.equal(updates['shape.width'].value, 1024);
@@ -198,9 +205,8 @@ test('controls', function (t) {
 
       raf(function () {
         t.equal(callCount, 1);
+        t.end();
       });
-
-      t.end();
     });
   });
 

@@ -151,13 +151,13 @@ function constructField (fieldName, fieldValue, parentContext) {
     case 'boolean':
       return new CheckboxField(fieldName, fieldValue, {}, parentContext);
     case 'object':
-      return new Folder(fieldName, fieldValue, {}, parentContext);
+      return new Section(fieldName, fieldValue, {}, parentContext);
     default:
       return null;
   }
 }
 
-function Folder (name, inputFields, config, parentContext) {
+function Section (name, inputFields, config, parentContext) {
   var fields = {};
   var fieldProxy = {};
   var context = Object.create(parentContext);
@@ -165,7 +165,7 @@ function Folder (name, inputFields, config, parentContext) {
   Object.defineProperty(this, '$config', {enumerable: false, value: context});
   Object.defineProperty(this, '$field', {enumerable: false, value: fieldProxy});
 
-  context.type = 'folder';
+  context.type = 'section';
 
   Object.defineProperty(context, 'path', {
     get: function () {
@@ -177,8 +177,8 @@ function Folder (name, inputFields, config, parentContext) {
   Object.keys(inputFields).forEach((fieldName) => {
     var field = fields[fieldName] = constructField(fieldName, inputFields[fieldName], context);
 
-    if (field instanceof Folder) {
-      // For folders, it needs to return the folder object with fancy getters and setters
+    if (field instanceof Section) {
+      // For folders, it needs to return the section object with fancy getters and setters
       Object.defineProperty(this, fieldName, {
         enumerable: true,
         value: fields[fieldName]
@@ -246,9 +246,9 @@ function controls (fields, options) {
     path: ''
   };
 
-  var folder = new Folder('', fields, null, rootContext);
+  var section = new Section('', fields, null, rootContext);
 
-  return folder;
+  return section;
 };
 
 controls.slider = function (value, opts) {
@@ -267,8 +267,8 @@ controls.color = function (value, opts) {
   return new ColorField(null, value, opts, {});
 };
 
-controls.folder = function (value, opts) {
-  return new Folder(null, value, opts, {});
+controls.section = function (value, opts) {
+  return new Section(null, value, opts, {});
 }
 
 module.exports = controls;
