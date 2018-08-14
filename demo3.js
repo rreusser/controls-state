@@ -33,7 +33,7 @@ document.body.append(h('div.docs', [
       height: 480
     }
   },
-  analysis: Controls.Section({
+  analysis: {
     cost: Controls.Slider(1, {
       min: 0,
       max: 1,
@@ -44,7 +44,7 @@ document.body.append(h('div.docs', [
       max: 1,
       step: 0.01
     })
-  })
+  }
 }));`)),
   h('p', 'Open up the inspector console and try accessing the property values with, for example,'),
   h('pre', h('code', `> controls.name
