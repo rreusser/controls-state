@@ -1,24 +1,36 @@
 'use strict';
 
+var EventEmitter = require('event-emitter');
+var raf = require('raf');
+
 module.exports = Field;
 
-function Field (name, initialValue, config, parentContext) {
+function Field (name, initialValue, parentField, parentContext) {
   if (/\./.test(name)) {
     throw new Error('Field names may not contain a period');
   }
 
   var value = initialValue;
 
+  this.parent = parentField || null;
   this.context = parentContext ? Object.create(parentContext) : null;
+  this.events = new EventEmitter();
 
-  if (this.context){ 
+  this.type = null;
+  this.name = name;
+
+  if (this.context) {
     this.context.parentContext = parentContext;
     this.context.field = this;
   }
 
+  this.batchedUpdates = {};
+  this.batchUpdatePaths = [];
+  this.batchUpdateRaf = null;
+
   Object.defineProperty(this, '$field', {
     enumerable: false,
-    value: this,
+    value: this
   });
 
   Object.defineProperty(this, 'value', {
@@ -30,35 +42,37 @@ function Field (name, initialValue, config, parentContext) {
         field: this,
         path: this.path,
         oldValue: value,
-        value: newValue,
+        value: newValue
       };
 
-      var currentContext = this.context;
+      var field = this;
       do {
-        console.log('currentContext.parentContext:', currentContext.parentContext);
         var changes = {};
         changes[event.path] = Object.assign({}, event);
 
-        var path = currentContext.field.path;
+        var path = field.path;
+        var events = field.events;
 
-        currentContext.emit('change:' + path, Object.assign({}, event));
-        currentContext.emit('changes', changes);
+        if (!events) continue;
 
-        currentContext.batchEmit(path, Object.assign({}, event));
-      } while ((currentContext = currentContext.parentContext));
+        if (events.emit) {
+          events.emit('change:' + path, Object.assign({}, event));
+          events.emit('changes', changes);
+        }
 
+        if (events.batchEmit) {
+          events.batchEmit(path, Object.assign({}, event));
+        }
+      } while ((field = field.parent));
 
       value = newValue;
     }
   });
 
-  this.type = null;
-  this.name = name;
-
   Object.defineProperty(this, 'path', {
     enumerable: true,
     get: function () {
-      var parentPath = (parentContext || {}).path;
+      var parentPath = (parentField || {}).path;
       if (!this.name) return null;
       return (parentPath ? parentPath + '.' : '') + this.name;
     }
@@ -67,35 +81,58 @@ function Field (name, initialValue, config, parentContext) {
 
 Field.prototype = {
   onFinishChange: function (callback) {
-    this.context.on('finishChange:' + this.path, callback);
+    this.events.on('finishChange:' + this.path, callback);
     return this;
   },
   offFinishChange: function (callback) {
-    this.context.off('finishChange:' + this.path, callback);
+    this.events.off('finishChange:' + this.path, callback);
     return this;
   },
   onChange: function (callback) {
-    this.context.on('change:' + this.path, callback);
+    this.events.on('change:' + this.path, callback);
     return this;
   },
   offChange: function (callback) {
-    this.context.off('change:' + this.path, callback);
+    this.events.off('change:' + this.path, callback);
     return this;
   },
   onFinishChanges: function (callback) {
-    this.context.on('finishChanges', callback);
+    this.events.on('finishChanges', callback);
     return this;
   },
   offFinishChanges: function (callback) {
-    this.context.off('finishChanges', callback);
+    this.events.off('finishChanges', callback);
     return this;
   },
   onChanges: function (callback) {
-    this.context.on('changes', callback);
+    this.events.on('changes', callback);
     return this;
   },
   offChanges: function (callback) {
-    this.context.off('changes', callback);
+    this.events.off('changes', callback);
     return this;
   },
+  _emitUpdate: function () {
+    while (this.batchUpdatePaths.length) {
+      var updateKeys = Object.keys(this.batchedUpdates);
+      for (var i = 0; i < updateKeys.length; i++) {
+        var event = this.batchedUpdates[updateKeys[i]];
+        this.events.emit('finishChange:' + this.batchUpdatePaths.pop(), event);
+      }
+    }
+    this.batchedUpdates = {};
+    this.batchUpdateRaf = null;
+  },
+  _batchEmit: function (path, event) {
+    var existingUpdate = this.batchedUpdates[event.path];
+    if (existingUpdate) {
+      event.oldValue = existingUpdate.oldValue;
+    }
+    this.batchUpdatePaths.push(path);
+    this.batchedUpdates[path] = event;
+
+    if (!this.batchUpdateRaf) {
+      this.batchUpdateRaf = raf(this._emitUpdate);
+    }
+  }
 };

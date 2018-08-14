@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "semistandard",
+    "lint-fix": "semistandard --fix"
   },
   "keywords": [],
   "author": "",
@@ -13,6 +15,8 @@
     "browserify": "^16.2.2",
     "budo": "^11.3.2",
     "preact": "^8.3.0",
+    "semistandard": "^12.0.1",
+    "tap-spec": "^5.0.0",
     "tape": "^4.9.1"
   },
   "dependencies": {

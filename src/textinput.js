@@ -9,9 +9,9 @@ function TextInput (name, initialValue, config, parentContext) {
 
   initialValue = initialValue === undefined ? '' : initialValue;
 
-  Field.call(this, name, initialValue, config, parentContext);
+  Field.call(this, name, initialValue, parentContext);
 
-  this.type = 'textinput'
+  this.type = 'textinput';
 }
 
 TextInput.prototype = Object.create(Field.prototype);

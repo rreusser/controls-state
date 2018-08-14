@@ -1,18 +1,18 @@
-var controls = require('./');
+var Controls = require('./');
 
-var slider = controls.slider({
+var slider = Controls.slider({
   value: 5,
   min: 0,
   max: 10,
-  step: 1,
+  step: 1
 });
 
-var folder = new controls.folder({
+var folder = new Controls.Folder({
   width: 640,
   height: 480
 });
 
-var panel = controls({
+var state = Controls({
   color: '#ff0000',
   name: 'test',
   count: 7,
@@ -23,27 +23,27 @@ var panel = controls({
   },
   steps: slider,
   contents: folder,
-  resolution: controls.slider({
+  resolution: Controls.slider({
     value: 5,
     min: 0,
     max: 10,
     step: 1
   }),
-  bgcolor: controls.color('#000'),
-  fgcolor: controls.color(),
-  running: controls.checkbox(false),
+  bgcolor: Controls.color('#000'),
+  fgcolor: Controls.color(),
+  running: Controls.checkbox(false)
 });
 
-console.log('controls.color:', panel.color);
-console.log('controls.name:', panel.name);
-console.log('controls.count:', panel.count);
-console.log('controls.activated:', panel.activated);
-console.log('controls.steps:', panel.steps);
-console.log('controls.shape.width:', panel.shape.width);
-console.log('controls.shape.height:', panel.shape.height);
-console.log('controls.resolution:', panel.resolution);
-console.log('controls.bgcolor:', panel.bgcolor);
-console.log('controls.fgcolor:', panel.fgcolor);
-console.log('controls.running:', panel.running);
-console.log('controls.contents.width:', panel.contents.width);
-console.log('controls.contents.height:', panel.contents.height);
+console.log('state.color:', state.color);
+console.log('state.name:', state.name);
+console.log('state.count:', state.count);
+console.log('state.activated:', state.activated);
+console.log('state.steps:', state.steps);
+console.log('state.shape.width:', state.shape.width);
+console.log('state.shape.height:', state.shape.height);
+console.log('state.resolution:', state.resolution);
+console.log('state.bgcolor:', state.bgcolor);
+console.log('state.fgcolor:', state.fgcolor);
+console.log('state.running:', state.running);
+console.log('state.contents.width:', state.contents.width);
+console.log('state.contents.height:', state.contents.height);

@@ -3,14 +3,14 @@ var controls = require('./');
 var state = window.state = controls({
   // It can try to infer types:
   background: '#ff0000',
-  
+
   // You can instantiate controls manually to provide more configuration
   alpha: controls.slider(0.5, {min: 0, max: 1, step: 0.01}),
 
   // Objects result in nested sections:
   shape: {
     width: 640,
-    height: 480,
+    height: 480
   }
 });
 
@@ -19,7 +19,7 @@ console.log('width:', state.shape.width); // -> 640
 console.log('shape.height:', state.shape.height); // -> 480
 
 // Via the $path property, you can access the underlying objects
-console.log(state.$path.shape.width)
+console.log(state.$path.shape.width);
 // -> Slider {
 //      type: 'slider',
 //      name: 'width',
@@ -66,4 +66,3 @@ state.$config.onChanges(function (update) {
 state.shape.width = 400;
 state.shape.height = 400;
 state.shape.height = 500;
-
