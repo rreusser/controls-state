@@ -3,6 +3,22 @@ var createClass = require('preact-classless-component');
 
 module.exports = createGui;
 
+require('insert-css')(`
+input {
+  margin: .4rem;
+}
+
+legend {
+  background-color: #000;
+  color: #fff;
+  padding: 3px 6px;
+}
+
+fieldset {
+  margin-bottom: 1.0rem;
+}
+`);
+
 function createGui (state) {
   var h = preact.h;
   var render = preact.render;
