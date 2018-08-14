@@ -1,23 +1,8 @@
 var preact = require('preact');
 var createClass = require('preact-classless-component');
+var css = require('insert-css');
 
 module.exports = createGui;
-
-require('insert-css')(`
-input {
-  margin: .4rem;
-}
-
-legend {
-  background-color: #000;
-  color: #fff;
-  padding: 3px 6px;
-}
-
-fieldset {
-  margin-bottom: 1.0rem;
-}
-`);
 
 function createGui (state) {
   var h = preact.h;
@@ -37,16 +22,53 @@ function createGui (state) {
     }
   });
 
+  var Select = createClass({
+    render: function () {
+      var field = this.props.field;
+      return h('div', {
+        className: 'bar'
+      }, [
+        h('label', {htmlFor: field.path}, field.name),
+        h('select', {
+          name: field.path,
+          id: field.path,
+        }, field.options.map(option =>
+          h('option', {
+            value: option,
+            selected: option === field.value
+          }, option)
+        ))
+      ]);
+    }
+  });
+
   var TextInput = createClass({
     render: function () {
       var field = this.props.field;
       return h('div', {
         className: 'bar'
       }, [
-        h('label', null, field.name),
+        h('label', {htmlFor: field.path}, field.name),
         h('input', {
+          id: field.path,
           type: 'text',
           value: field.value
+        })
+      ]);
+    }
+  });
+
+  var Checkbox = createClass({
+    render: function () {
+      var field = this.props.field;
+      return h('div', {
+        className: 'bar'
+      }, [
+        h('label', {htmlFor: field.path}, field.name),
+        h('input', {
+          id: field.path,
+          type: 'checkbox',
+          checked: field.value
         })
       ]);
     }
@@ -58,8 +80,9 @@ function createGui (state) {
       return h('div', {
         className: 'bar'
       }, [
-        h('label', null, field.name),
+        h('label', {htmlFor: field.path}, field.name),
         h('input', {
+          id: field.path,
           type: 'range',
           min: field.min,
           max: field.max,
@@ -73,10 +96,14 @@ function createGui (state) {
   var Control = createClass({
     render: function () {
       switch (this.props.field.type) {
+        case 'checkbox':
+          return h(Checkbox, {field: this.props.field});
         case 'textinput':
           return h(TextInput, {field: this.props.field});
         case 'slider':
           return h(Slider, {field: this.props.field});
+        case 'select':
+          return h(Select, {field: this.props.field});
         case 'section':
           return h(Section, {field: this.props.field});
         default:
@@ -87,13 +114,48 @@ function createGui (state) {
 
   var App = createClass({
     render: function () {
-      return h('div', null,
-        Object.keys(this.props.state).map(key =>
-          h(Control, {field: this.props.state.$path[key].$field})
-        )
-      );
+      return h('div', {
+        className: 'control-panel'
+      },
+      Object.keys(this.props.state).map(key =>
+        h(Control, {field: this.props.state.$path[key].$field})
+      ));
     }
   });
+
+  css(`
+    .control-panel {
+      max-width: 350px;
+      border: 1px solid black;
+      padding: 15px;
+      position: fixed;
+      width: 350px;
+      top: 0;
+      right: 0;
+    }
+
+    .control-panel label {
+      display: inline-block;
+      width: 25%;
+    }
+
+    .control-panel input,
+    .control-panel select {
+      margin: .4rem;
+      width: 60%;
+    }
+
+    .control-panel legend {
+      background-color: #000;
+      color: #fff;
+      padding: 3px 6px;
+    }
+
+    .control-panel fieldset {
+      margin-bottom: 1.0rem;
+    }
+  `);
+
 
   render(h(App, {state: state}), document.body);
 

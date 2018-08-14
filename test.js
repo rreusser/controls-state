@@ -3,6 +3,14 @@ var Controls = require('./');
 // var raf = require('raf');
 
 test('controls', function (t) {
+  t.test('field types', function (t) {
+    t.test('a string is type textinput', function (t) {
+      var c = Controls({foo: 'bar'});
+      t.equal(c.$path.foo.type, 'textinput');
+      t.end();
+    });
+  });
+
   t.test('injecting context', function (t) {
     t.test('injects context into already-instantiated controls', function (t) {
       var s = Controls.Slider({value: 1});

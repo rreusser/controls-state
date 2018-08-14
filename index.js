@@ -6,6 +6,7 @@ var Slider = require('./src/slider');
 var Rangeslider = require('./src/rangeslider');
 var TextInput = require('./src/textinput');
 var Color = require('./src/color');
+var Select = require('./src/select');
 
 function Controls (fields, options) {
   return new Section('', fields, options).value;
@@ -21,6 +22,10 @@ Controls.Rangeslider = function (value, opts) {
 
 Controls.Textinput = function (value, opts) {
   return new TextInput(null, value, opts);
+};
+
+Controls.Select = function (value, opts) {
+  return new Select(null, value, opts);
 };
 
 Controls.Checkbox = function (value, opts) {

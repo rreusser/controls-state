@@ -36,6 +36,7 @@ function constructField (fieldName, fieldValue, parentField, parentContext) {
     case 'colorfield':
     case 'textfield':
     case 'sliderfield':
+    case 'selectfield':
     case 'rangesliderfield':
     case 'checkboxfield':
     case 'sectionfield':
