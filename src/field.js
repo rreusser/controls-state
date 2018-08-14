@@ -60,8 +60,8 @@ function Field (name, initialValue, parentField, parentContext) {
           events.emit('changes', changes);
         }
 
-        if (events.batchEmit) {
-          events.batchEmit(path, Object.assign({}, event));
+        if (field._batchEmit) {
+          field._batchEmit(this.path, Object.assign({}, event));
         }
       } while ((field = field.parent));
 
@@ -72,7 +72,7 @@ function Field (name, initialValue, parentField, parentContext) {
   Object.defineProperty(this, 'path', {
     enumerable: true,
     get: function () {
-      var parentPath = (parentField || {}).path;
+      var parentPath = (this.parent || {}).path;
       if (!this.name) return null;
       return (parentPath ? parentPath + '.' : '') + this.name;
     }
@@ -113,6 +113,8 @@ Field.prototype = {
     return this;
   },
   _emitUpdate: function () {
+    this.events.emit('finishChanges', Object.assign({}, this.batchedUpdates));
+
     while (this.batchUpdatePaths.length) {
       var updateKeys = Object.keys(this.batchedUpdates);
       for (var i = 0; i < updateKeys.length; i++) {
@@ -132,7 +134,7 @@ Field.prototype = {
     this.batchedUpdates[path] = event;
 
     if (!this.batchUpdateRaf) {
-      this.batchUpdateRaf = raf(this._emitUpdate);
+      this.batchUpdateRaf = raf(this._emitUpdate.bind(this));
     }
   }
 };

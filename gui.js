@@ -32,6 +32,7 @@ function createGui (state) {
         h('select', {
           name: field.path,
           id: field.path,
+          onChange: event => this.props.field.value = event.target.value,
         }, field.options.map(option =>
           h('option', {
             value: option,
@@ -52,7 +53,8 @@ function createGui (state) {
         h('input', {
           id: field.path,
           type: 'text',
-          value: field.value
+          value: field.value,
+          onChange: event => this.props.field.value = event.target.value,
         })
       ]);
     }
@@ -68,7 +70,8 @@ function createGui (state) {
         h('input', {
           id: field.path,
           type: 'checkbox',
-          checked: field.value
+          checked: field.value,
+          onInput: event => this.props.field.value = event.target.checked,
         })
       ]);
     }
@@ -86,9 +89,11 @@ function createGui (state) {
           type: 'range',
           min: field.min,
           max: field.max,
-          step: field.step
+          step: field.step,
+          value: field.value,
+          onInput: event => this.props.field.value = parseFloat(event.target.value)
         }),
-        h('span', null, field.value)
+        h('span', null, field.value.toFixed(2).replace(/\.?0*$/,''))
       ]);
     }
   });
@@ -113,6 +118,11 @@ function createGui (state) {
   });
 
   var App = createClass({
+    componentDidMount: function () {
+      this.props.state.$field.onChanges(updates => {
+        this.setState({foo: Math.random()});
+      });
+    },
     render: function () {
       return h('div', {
         className: 'control-panel'
@@ -142,7 +152,7 @@ function createGui (state) {
     .control-panel input,
     .control-panel select {
       margin: .4rem;
-      width: 60%;
+      width: 50%;
     }
 
     .control-panel legend {
@@ -151,7 +161,7 @@ function createGui (state) {
       padding: 3px 6px;
     }
 
-    .control-panel fieldset {
+    .control-panel fieldset:not(:last-child) {
       margin-bottom: 1.0rem;
     }
   `);

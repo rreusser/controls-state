@@ -43,9 +43,13 @@ function constructField (fieldName, fieldValue, parentField, parentContext) {
       if (fieldValue.path) {
         throw new Error('You may only add an field to a set of controls once.');
       }
+
       fieldValue.$field.context = Object.assign(Object.create(parentContext), fieldValue.context);
       fieldValue.$field.context.parentContext = parentContext;
+
+      fieldValue.$field.parent = parentField;
       fieldValue.name = fieldName;
+
       return fieldValue;
     case 'color':
       return new Color(fieldName, fieldValue, {}, parentField, parentContext);
