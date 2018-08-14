@@ -99,6 +99,7 @@ test('controls', function (t) {
       t.end();
     });
 
+    /*
     t.test('setting a nested property', function (t) {
       var c = controls({shape: {width: 640}});
       t.equal(c.shape.width, 640);
@@ -106,14 +107,76 @@ test('controls', function (t) {
       t.equal(c.shape.width, 1024);
       t.end();
     });
+    */
+  });
+  return t.end();
+
+  t.test('context', function (t) {
+    t.test('unbound components have no context', function (t) {
+      var field = controls.slider(5);
+      t.equal(field.context, null);
+      t.end();
+    });
+
+    t.test('using a component injects context', function (t) {
+      var field = controls.slider(5);
+      var c = controls({width: field});
+      t.notEqual(field.context, null);
+      t.equal(c.$field.context, field.context.parentContext);
+      t.end();
+    });
+
+    t.test('context.field points to the component object', function (t) {
+      var field = controls.slider(5);
+      var c = controls({width: field});
+      t.equal(field.context.field, field);
+      t.equal(c.$field, c.$field.context.field);
+      t.end();
+    });
   });
 
   t.test('events', function (t) {
+    t.test('unbound components can have events attached', function (t) {
+      var field = controls.slider(5);
+      callCount = 0;
+      field.onChange(function () {
+        callCount++;
+      });
+      field.value = 10;
+      t.equal(callCount, 1);
+      t.end();
+    });
+
+    return t.end();
+    t.test('accepts event handlers on instantiated components', function (t) {
+      t.test('emits nested change events', function (t) {
+        var c = controls({
+          shape: {
+            width: controls.slider(120)
+          }
+        });
+        console.log('c.$path.shape.width:', c.$path.shape.width);
+
+        var called = false;
+        c.$field.onFinishChanges(function (updates) {
+          t.equal(updates['shape.width'].value, 240);
+          called = true;
+        });
+
+        c.shape.width = 240;
+
+        raf(function () {
+          t.equal(called, true);
+          t.end();
+        });
+      });
+    });
+
     t.test('emits change:path events', function (t) {
       var c = controls({foo: 5});
 
       var called = false;
-      c.$field.onFinishChange('foo', function (event) {
+      c.$path.foo.onFinishChange(function (event) {
         t.equal(event.field, c.$path.foo);
         t.equal(event.path, 'foo');
         t.equal(event.oldValue, 5);
@@ -133,7 +196,7 @@ test('controls', function (t) {
       var c = controls({shape: {width: 120}});
 
       var called = false;
-      c.$field.onFinishChange('shape.width', function (event) {
+      c.$path.shape.width.onFinishChange(function (event) {
         t.equal(event.field, c.$path.shape.width);
         t.equal(event.path, 'shape.width');
         t.equal(event.oldValue, 120);
@@ -145,6 +208,26 @@ test('controls', function (t) {
 
       raf(function (){ 
         t.equal(called, true);
+        t.end();
+      });
+    });
+    
+    t.test('can subscribe to events on sections', function (t) {
+      var c = controls({shape: {width: 120}});
+
+      var callCount = 0;
+      c.$path.shape.onFinishChange(function (event) {
+        t.equal(event.field, c.$path.shape.width);
+        t.equal(event.path, 'shape.width');
+        t.equal(event.oldValue, 120);
+        t.equal(event.value, 240);
+        callCount++;
+      });
+
+      c.shape.width = 240;
+
+      raf(function (){ 
+        t.equal(callCount, 1);
         t.end();
       });
     });
@@ -209,6 +292,8 @@ test('controls', function (t) {
       });
     });
   });
+
+  return t.end();
 
   t.test('slider field', function (t) {
     t.test('creation', function (t) {

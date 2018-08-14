@@ -23,8 +23,6 @@ function createGui (state) {
   });
 
   var Slider = createClass({
-    componentDidMount: function () {
-    },
     render: function () {
       var field = this.props.field;
       return h('div', {

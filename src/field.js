@@ -9,7 +9,12 @@ function Field (name, initialValue, config, parentContext) {
 
   var value = initialValue;
 
-  var context = parentContext ? Object.create(parentContext) : {};
+  this.context = parentContext ? Object.create(parentContext) : null;
+
+  if (this.context){ 
+    this.context.parentContext = parentContext;
+    this.context.field = this;
+  }
 
   Object.defineProperty(this, '$field', {
     enumerable: false,
@@ -28,14 +33,20 @@ function Field (name, initialValue, config, parentContext) {
         value: newValue,
       };
 
-      if (context.emit) {
-        context.emit('change:' + event.path, Object.assign({}, event));
-
+      var currentContext = this.context;
+      do {
+        console.log('currentContext.parentContext:', currentContext.parentContext);
         var changes = {};
         changes[event.path] = Object.assign({}, event);
-        context.emit('changes', changes);
-      }
-      if (context.batchEmit) context.batchEmit(event.path, Object.assign({}, event));
+
+        var path = currentContext.field.path;
+
+        currentContext.emit('change:' + path, Object.assign({}, event));
+        currentContext.emit('changes', changes);
+
+        currentContext.batchEmit(path, Object.assign({}, event));
+      } while ((currentContext = currentContext.parentContext));
+
 
       value = newValue;
     }
@@ -55,29 +66,36 @@ function Field (name, initialValue, config, parentContext) {
 }
 
 Field.prototype = {
-  onFinishChange: function (path, callback) {
-    return this.context.on('finishChange:' + path, callback);
+  onFinishChange: function (callback) {
+    this.context.on('finishChange:' + this.path, callback);
+    return this;
   },
-  offFinishChange: function (path, callback) {
-    return this.context.off('finishChange:' + path, callback);
+  offFinishChange: function (callback) {
+    this.context.off('finishChange:' + this.path, callback);
+    return this;
   },
-  onChange: function (path, callback) {
-    return this.context.on('change:' + path, callback);
+  onChange: function (callback) {
+    this.context.on('change:' + this.path, callback);
+    return this;
   },
-  offChange: function (path, callback) {
-    return this.context.off('change:' + path, callback);
+  offChange: function (callback) {
+    this.context.off('change:' + this.path, callback);
+    return this;
   },
-
   onFinishChanges: function (callback) {
-    return this.context.on('finishChanges', callback);
+    this.context.on('finishChanges', callback);
+    return this;
   },
   offFinishChanges: function (callback) {
-    return this.context.off('finishChanges', callback);
+    this.context.off('finishChanges', callback);
+    return this;
   },
   onChanges: function (callback) {
-    return this.context.on('changes', callback);
+    this.context.on('changes', callback);
+    return this;
   },
   offChanges: function (callback) {
-    return this.context.off('changes', callback);
+    this.context.off('changes', callback);
+    return this;
   },
 };

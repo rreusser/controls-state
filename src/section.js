@@ -42,6 +42,9 @@ function constructField (fieldName, fieldValue, parentContext) {
         throw new Error('You may only add an field to a set of controls once.');
       }
       fieldValue.$field.context = Object.assign(Object.create(parentContext), fieldValue.context);
+      fieldValue.$field.context.parentContext = parentContext;
+      fieldValue.$field.context.field = fieldValue.$field;
+      console.log('fieldValue:', fieldValue);
       fieldValue.name = fieldName;
       return fieldValue;
     case 'color':
@@ -61,7 +64,8 @@ function constructField (fieldName, fieldValue, parentContext) {
 
 function Section (name, inputFields, config, parentContext) {
   var fields = {};
-  this.context = Object.create(parentContext);
+  //this.context = Object.create(parentContext);
+  //this.context.field = this;
 
   var value = {};
   Field.call(this, name, value, this.context, parentContext);
