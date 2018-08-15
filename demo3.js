@@ -1,6 +1,7 @@
 var Gui = require('./gui');
 var Controls = require('./index');
 var h = require('h');
+var beautify = require('json-beautify');
 
 require('insert-css')(`
 .docs {
@@ -13,6 +14,16 @@ require('insert-css')(`
 .docs pre {
   background-color: #eee;
   margin-left: 15px;
+  padding: 15px;
+}
+
+.debug {
+  position: fixed;
+  top: 415px;
+  right: 0;
+  width: 350px;
+  background-color: #eee;
+  white-space: pre-wrap;
   padding: 15px;
 }
 `);
@@ -133,4 +144,14 @@ window.controls = Gui(Controls({
       controls.analysis.cost = 1 - controls.analysis.benefit;
     }
   })
-}));
+}))
+
+function getJSON () {
+  return beautify(controls, null, 2, 0);
+}
+controls.$field.onFinishChanges(() => debugNode.textContent = getJSON());
+
+var debugNode = h('code');
+document.body.append(h('pre.debug', debugNode));
+
+debugNode.textContent = getJSON();

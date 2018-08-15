@@ -54,7 +54,7 @@ function createGui (state) {
           id: field.path,
           type: 'text',
           value: field.value,
-          onChange: event => this.props.field.value = event.target.value,
+          onInput: event => this.props.field.value = event.target.value,
         })
       ]);
     }
