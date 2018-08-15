@@ -34,7 +34,7 @@ document.body.append(h('div.docs', [
   h('pre', h('code', `window.controls = Gui(Controls({
   name: 'test',
   simulation: {
-    activated: true,
+    running: true,
     iterations: 5,
     method: Controls.Select('RK4', {
       options: ['Euler', 'RK2', 'RK4']
@@ -65,7 +65,7 @@ document.body.append(h('div.docs', [
 640`)),
 
   h('p', 'You can also set values and the panel will update:'),
-  h('pre', h('code', `> controls.simulation.activated = false
+  h('pre', h('code', `> controls.simulation.running = false
 false`)),
 
   h('p', 'You can subscribe to events on sections instead of just individual fields by expanding the implicit section definition into an object. That is, the shape section,'),
@@ -116,7 +116,7 @@ function balance () {
 window.controls = Gui(Controls({
   name: 'test',
   simulation: {
-    activated: true,
+    running: true,
     iterations: 5,
     method: Controls.Select('RK4', {
       options: ['Euler', 'RK2', 'RK4']
