@@ -74,8 +74,7 @@ document.body.append(h('div.docs', [
   }
 });`)),
   h('h2', 'GUI Initialization'),
-  h('p', 'We can also attach a GUI. The GUI implemented in thie project is just a wrapper around the state object that controls it  strictly through its public API.'),
-  h('p', 'We can wrap the above state in a GUI'),
+  h('p', 'You can also attach a GUI. The GUI implemented in this project is just a wrapper around the state object that controls it  strictly through its public API.'),
   h('pre', h('code', `var gui = Gui(controls)`)),
   h('p', 'You may pass additional configuration as the second argument of a constructor. For example, we may initialize the shape section in a collapsed state with the code below.'),
   h('pre', h('code', `shape: Controls.Section({
