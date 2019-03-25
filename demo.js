@@ -1,13 +1,13 @@
 var Controls = require('./');
 
-var slider = Controls.slider({
+var slider = Controls.Slider({
   value: 5,
   min: 0,
   max: 10,
   step: 1
 });
 
-var folder = new Controls.Folder({
+var folder = new Controls.Section({
   width: 640,
   height: 480
 });
@@ -23,15 +23,15 @@ var state = Controls({
   },
   steps: slider,
   contents: folder,
-  resolution: Controls.slider({
+  resolution: Controls.Slider({
     value: 5,
     min: 0,
     max: 10,
     step: 1
   }),
-  bgcolor: Controls.color('#000'),
-  fgcolor: Controls.color(),
-  running: Controls.checkbox(false)
+  bgcolor: Controls.Color('#000'),
+  fgcolor: Controls.Color(),
+  running: Controls.Checkbox(false)
 });
 
 console.log('state.color:', state.color);

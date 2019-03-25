@@ -1,11 +1,20 @@
-var Gui = require('./gui');
+var wrapGui = require('./gui');
 var Controls = require('./index');
 var h = require('h');
 var beautify = require('json-beautify');
 
+var FONT_FAMILY = 'Fira Sans Condensed';
+
+var fontStyle = document.createElement('style');
+fontStyle.setAttribute('type', 'text/css');
+document.querySelector('head').appendChild(fontStyle);
+fontStyle.textContent = `
+  @import url('https://fonts.googleapis.com/css?family=${FONT_FAMILY.replace(/ /g, '+')}');
+`;
+
 require('insert-css')(`
 .docs {
-  width: calc(100% - 405px);
+  width: calc(100% - 320px);
   max-width: 600px;
   margin: 15px;
   font-family: 'Helvetica', sans-serif;
@@ -17,22 +26,29 @@ require('insert-css')(`
   padding: 15px;
 }
 
-.debug {
+.myControlPanel {
+  font-family: ${FONT_FAMILY}, Helvetica, serif;
+  font-size: 13px;
   position: fixed;
-  top: 415px;
-  right: 0;
-  width: 350px;
-  background-color: #eee;
-  white-space: pre-wrap;
-  padding: 15px;
+  top: 0;
+  right: 10px;
+  z-index: 1;
+}
+
+.myControlPanel2 {
+  width: 400px;
 }
 `);
 
+var inlineControlsDiv = h('div');
+
 document.body.append(h('div.docs', [
-  h('p', 'The panel is coupled to the gui on the right. To see this, you can open up the console and query and modify its state directly.'),
-  h('p', 'The panel to the right is created with the code:'),
-  h('pre', h('code', `window.controls = Gui(Controls({
+  h('h2', 'State Initialization'),
+  h('p', 'Excluding some event handling and customization, the state object controlled by the panel to the right is created with the code:'),
+  h('pre', h('code', `window.controls = Controls({
   name: 'test',
+  color: '#ff0000',
+  action: () => alert('Hello!'),
   simulation: {
     running: true,
     iterations: 5,
@@ -56,7 +72,22 @@ document.body.append(h('div.docs', [
       step: 0.01
     })
   }
-}));`)),
+});`)),
+  h('h2', 'GUI Initialization'),
+  h('p', 'We can also attach a GUI. The GUI implemented in thie project is just a wrapper around the state object that controls it  strictly through its public API.'),
+  h('p', 'We can wrap the above state in a GUI'),
+  h('pre', h('code', `var gui = Gui(controls)`)),
+  h('p', 'You may pass additional configuration as the second argument of a constructor. For example, we may initialize the shape section in a collapsed state with the code below.'),
+  h('pre', h('code', `shape: Controls.Section({
+  width: 640,
+  height: 480,
+}, {
+  expanded: false
+})`)),
+  h('p', 'Although the GUI receives these props as a config object, what to make of it is strictly the concern of the GUI.'),
+
+  h('h2', 'Properties'),
+
   h('p', 'Open up the inspector console and try accessing the property values with, for example,'),
   h('pre', h('code', `> controls.name
 "test"
@@ -68,16 +99,22 @@ document.body.append(h('div.docs', [
   h('pre', h('code', `> controls.simulation.running = false
 false`)),
 
+  h('h2', 'Events'),
   h('p', 'You can subscribe to events on sections instead of just individual fields by expanding the implicit section definition into an object. That is, the shape section,'),
   h('pre', h('code', `shape: {
   width: 640,
   height: 480
 }`)),
-  h('p', 'becomes'),
+  h('p', 'can be expanded to'),
+  h('pre', h('code', `shape: Controls.Shape({
+  width: 640,
+  height: 480
+})`)),
+  h('p', 'after which it\'s easy to add event listeners.'),
   h('pre', h('code', `shape: Controls.Section({
   width: 640,
   height: 480
-}).onFinishChanges(function (updates) {
+}).onChanges(function (updates) {
   console.log(updates);
   // Resize your simulation here
 })`)),
@@ -93,13 +130,40 @@ false`)),
     max: 1,
     step: 0.01
   })
-}).onFinishChanges(updates => {
+}).onChanges(updates => {
   if (updates['analysis.cost']) {
     controls.analysis.benefit = 1 - controls.analysis.cost;
   } else {
     controls.analysis.cost = 1 - controls.analysis.benefit;
   }
 })`)),
+  h('h2', 'Markup'),
+  h('p', 'Since it\'s loosely coupled to the GUI, you can simply create additional GUI instances! And it\'s all just (reasonably) semantic HTML. Unstyled, the panel looks like this.'),
+  inlineControlsDiv,
+  
+  h('h2', 'Advanced Usage'),
+  h('p', 'Sections are a bit fancy so that you typically just get or set properties by value. You may access the section instance using ', h('code', '$field'), '.'),
+
+  h('pre', h('code', `> controls.simulation.$field
+Section {
+  parent: Section,
+  events: {…},
+  type: "section",
+  name: "simulation",
+  batchedUpdates: {…},
+  …
+}`)),
+
+  h('p', 'In case you need to interface with the control field instances directly, you may access the field using ', h('code', '$path'), '.'),
+  h('pre', h('code', `> controls.$path.simulation.shape.height
+Slider {
+  parent: Section,
+  events: {…},
+  type: "slider",
+  name: "height",
+  batchedUpdates: {…},
+  …
+}`)),
 
   h('p', 'The API and corresponding documentation isn\'t stable or complete. Suggestsions are welcome'),
 ]));
@@ -110,48 +174,87 @@ function resize () {
 
 function balance () {
   controls.analysis.cost = 1 - controls.analysis.benefit;
-  console.log('balance!');
 }
 
-window.controls = Gui(Controls({
-  name: 'test',
-  simulation: {
-    running: true,
-    iterations: 5,
-    method: Controls.Select('RK4', {
-      options: ['Euler', 'RK2', 'RK4']
+var controls = window.controls = Controls(
+  {
+    instructions: Controls.Raw(`<p>
+      Hello! Below you'll find a number of controls!
+      You can modify the values and watch as they feed
+      directly into the JSON-serialized output.
+    </p>`),
+
+    name: 'test',
+
+    color: '#ff0000',
+
+    action: () => alert('Hello!'),
+
+    simulation: Controls.Section({
+      running: true,
+
+      iterationsPerTimeStep: 5,
+
+      method: Controls.Select('RK4', {
+        options: ['Euler', 'RK2', 'RK4']
+      }),
+
+      shape: Controls.Section({
+        width: 640,
+        height: 480,
+      }, {
+        label: 'Dimensions',
+      })
+    },
+    {
+      label: 'Simulation',
     }),
-    shape: Controls.Section({
-      width: 640,
-      height: 480
-    }).onFinishChanges(() => console.log('resize!')),
-  },
-  analysis: Controls.Section({
-    cost: Controls.Slider(1, {
-      min: 0,
-      max: 1,
-      step: 0.01
-    }),
-    benefit: Controls.Slider(0, {
-      min: 0,
-      max: 1,
-      step: 0.01
+    analysis: Controls.Section({
+      content: Controls.Raw((state, analysis) => `<p>
+        The sliders below will update each other in
+        an opposing manner. They do this by checking
+        which has been updated and then updating the
+        opposing control. Currently the cost is ${analysis.cost.toFixed(2)}
+        and the benefit is ${analysis.benefit.toFixed(2)}.
+      </p>`),
+
+      cost: Controls.Slider(1, {
+        min: 0,
+        max: 1,
+        step: 0.01
+      }),
+
+      benefit: Controls.Slider(0, {
+        min: 0,
+        max: 1,
+        step: 0.01
+      }),
+    }, {
+      expanded: false,
+      label: 'Analysis',
     })
-  }).onFinishChanges(updates => {
-    if (updates['analysis.cost']) {
-      controls.analysis.benefit = 1 - controls.analysis.cost;
-    } else {
-      controls.analysis.cost = 1 - controls.analysis.benefit;
-    }
-  })
-}))
+      .onChanges(updates => {
+        if (updates.cost) {
+          controls.analysis.benefit = 1 - controls.analysis.cost;
+        } else {
+          controls.analysis.cost = 1 - controls.analysis.benefit;
+        }
+      }),
+    output: Controls.Section({
+      content: Controls.Raw(state => `<pre>JSON.stringify(controls):\n${beautify(controls, null, 2, 0)}</pre>`)
+    }, {
+      enumerable: false,
+      label: 'JSON Output',
+    })
+  }
+)
 
-function getJSON () {
-  return beautify(controls, null, 2, 0);
-}
-controls.$field.onFinishChanges(() => debugNode.textContent = getJSON());
+var gui1 = wrapGui(controls, {
+  className: 'myControlPanel'
+});
 
-var debugNode = h('code');
-document.body.append(h('pre.debug', debugNode));
-
-debugNode.textContent = getJSON();
+var gui2 = wrapGui(controls, {
+  className: 'myControlPanel2',
+  style: false,
+  root: inlineControlsDiv,
+});

@@ -5,105 +5,112 @@ var raf = require('raf');
 
 module.exports = Field;
 
-function Field (name, initialValue, parentField, parentContext) {
+function Field (name, initialValue, parentField, config) {
   if (/\./.test(name)) {
     throw new Error('Field names may not contain a period');
   }
 
+  config = config || {};
+
   var value = initialValue;
 
   this.parent = parentField || null;
-  this.context = parentContext ? Object.create(parentContext) : null;
   this.events = new EventEmitter();
 
   this.type = null;
   this.name = name;
-
-  if (this.context) {
-    this.context.parentContext = parentContext;
-    this.context.field = this;
-  }
-
+  
   this.batchedUpdates = {};
   this.batchUpdatePaths = [];
   this.batchUpdateRaf = null;
 
-  Object.defineProperty(this, '$field', {
-    enumerable: false,
-    value: this
-  });
-
-  Object.defineProperty(this, 'value', {
-    get: function () {
-      return value;
+  Object.defineProperties(this, {
+    '$field': {
+      enumerable: false,
+      value: this
     },
-    set: function (newValue) {
-      var event = {
-        field: this,
-        path: this.path,
-        oldValue: value,
-        value: newValue
-      };
+    '$config': {
+      enumerable: false,
+      value: config
+    },
+    'value': {
+      get: function () {
+        return value;
+      },
+      set: function (newValue) {
+        var event = {
+          field: this,
+          name: this.name,
+          path: this.path,
+          fullpath: this.path,
+          oldValue: value,
+          value: newValue
+        };
 
-      var field = this;
-      do {
-        var changes = {};
-        changes[event.path] = Object.assign({}, event);
+        var path = [];
+        var field = this;
 
-        var path = field.path;
-        var events = field.events;
+        do {
+          event.path = path.join('.');
 
-        if (!events) continue;
+          var changes = {};
+          changes[event.path || this.name] = Object.assign({}, event);
 
-        if (events.emit) {
-          events.emit('change:' + path, Object.assign({}, event));
-          events.emit('changes', changes);
-        }
+          if (field.events.emit) {
+            field.events.emit('beforeChange', Object.assign({}, event));
+            field.events.emit('beforeChanges', changes);
+          }
 
-        if (field._batchEmit) {
-          field._batchEmit(this.path, Object.assign({}, event));
-        }
-      } while ((field = field.parent));
+          if (field._batchEmit) {
+            field._batchEmit(event.path, Object.assign({}, event));
+          }
 
-      value = newValue;
-    }
-  });
+          path.unshift(field.name);
 
-  Object.defineProperty(this, 'path', {
-    enumerable: true,
-    get: function () {
-      var parentPath = (this.parent || {}).path;
-      if (!this.name) return null;
-      return (parentPath ? parentPath + '.' : '') + this.name;
-    }
+        } while ((field = field.parent));
+
+        value = newValue;
+      }
+    },
+    'path': {
+      enumerable: true,
+      get: function () {
+        var parentPath = (this.parent || {}).path;
+        if (!this.name) return null;
+        return (parentPath ? parentPath + '.' : '') + this.name;
+      }
+    },
   });
 }
 
 Field.prototype = {
-  onFinishChange: function (callback) {
-    this.events.on('finishChange:' + this.path, callback);
+  onBeforeChange: function (callback) {
+    this.events.on('beforeChange', callback);
     return this;
   },
-  offFinishChange: function (callback) {
-    this.events.off('finishChange:' + this.path, callback);
+  offBeforeChange: function (callback) {
+    this.events.off('beforeChange', callback);
     return this;
   },
+
+  onBeforeChanges: function (callback) {
+    this.events.on('beforeChanges', callback);
+    return this;
+  },
+  offBeforeChanges: function (callback) {
+    this.events.off('beforeChanges', callback);
+    return this;
+  },
+
   onChange: function (callback) {
-    this.events.on('change:' + this.path, callback);
+    this.events.on('change', callback);
     return this;
   },
   offChange: function (callback) {
-    this.events.off('change:' + this.path, callback);
+    this.events.off('change', callback);
     return this;
   },
-  onFinishChanges: function (callback) {
-    this.events.on('finishChanges', callback);
-    return this;
-  },
-  offFinishChanges: function (callback) {
-    this.events.off('finishChanges', callback);
-    return this;
-  },
+
   onChanges: function (callback) {
     this.events.on('changes', callback);
     return this;
@@ -112,14 +119,17 @@ Field.prototype = {
     this.events.off('changes', callback);
     return this;
   },
+
   _emitUpdate: function () {
-    this.events.emit('finishChanges', Object.assign({}, this.batchedUpdates));
+    this.events.emit('changes', Object.assign({}, this.batchedUpdates));
 
     while (this.batchUpdatePaths.length) {
       var updateKeys = Object.keys(this.batchedUpdates);
       for (var i = 0; i < updateKeys.length; i++) {
         var event = this.batchedUpdates[updateKeys[i]];
-        this.events.emit('finishChange:' + this.batchUpdatePaths.pop(), event);
+        var path = this.batchUpdatePaths.pop();
+        this.events.emit('change', event);
+        this.events.emit('change:' + path, event);
       }
     }
     this.batchedUpdates = {};

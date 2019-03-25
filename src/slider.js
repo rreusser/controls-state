@@ -4,13 +4,13 @@ var Field = require('./field');
 
 module.exports = Slider;
 
-function Slider (name, initialValue, config, parentField, parentContext) {
-  if (!(this instanceof Slider)) return new Slider(name, initialValue, parentContext);
+function Slider (name, initialValue, config, parentField) {
+  if (!(this instanceof Slider)) return new Slider(name, initialValue, config, parentField);
 
   initialValue = initialValue === undefined ? 0 : initialValue;
   config = config || {};
 
-  Field.call(this, name, initialValue, parentField, parentContext);
+  Field.call(this, name, initialValue, parentField, config);
 
   var min = config.min === undefined ? Math.min(initialValue, 0) : config.min;
   var max = config.max === undefined ? Math.max(initialValue, 1) : config.max;

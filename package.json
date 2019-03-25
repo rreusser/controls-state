@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "node test.js",
     "build": "rm -rf docs && mkdir -p docs && browserify demo3.js -t es2020 -t [ envify --NODE_ENV production ] | uglifyjs -cm |  indexhtmlify > docs/index.html",
     "lint": "semistandard",
     "lint-fix": "semistandard --fix"
@@ -29,6 +29,7 @@
   "dependencies": {
     "insert-css": "^2.0.0",
     "preact-classless-component": "^1.1.1",
-    "raf": "^3.4.0"
+    "raf": "^3.4.0",
+    "rangetouch": "^1.0.5"
   }
 }

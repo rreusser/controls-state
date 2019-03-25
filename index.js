@@ -2,6 +2,7 @@
 
 var Section = require('./src/section');
 var Checkbox = require('./src/checkbox');
+var Raw = require('./src/raw');
 var Slider = require('./src/slider');
 var Rangeslider = require('./src/rangeslider');
 var TextInput = require('./src/textinput');
@@ -38,6 +39,10 @@ Controls.Color = function (value, opts) {
 
 Controls.Section = function (value, opts) {
   return new Section(null, value, opts);
+};
+
+Controls.Raw = function (value, opts) {
+  return new Raw(null, value, opts);
 };
 
 module.exports = Controls;

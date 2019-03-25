@@ -4,12 +4,12 @@ var Field = require('./field');
 
 module.exports = Checkbox;
 
-function Checkbox (name, initialValue, config, parentField, parentContext) {
-  if (!(this instanceof Checkbox)) return new Checkbox(name, initialValue, parentContext);
+function Checkbox (name, initialValue, config, parentField) {
+  if (!(this instanceof Checkbox)) return new Checkbox(name, initialValue, config, parentField);
 
   initialValue = initialValue === undefined ? true : !!initialValue;
 
-  Field.call(this, name, initialValue, parentField, parentContext);
+  Field.call(this, name, initialValue, parentField, config);
 
   this.type = 'checkbox';
 }

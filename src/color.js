@@ -4,12 +4,12 @@ var Field = require('./field');
 
 module.exports = Color;
 
-function Color (name, initialValue, config, parentField, parentContext) {
-  if (!(this instanceof Color)) return new Color(name, initialValue, parentContext);
+function Color (name, initialValue, config, parentField) {
+  if (!(this instanceof Color)) return new Color(name, initialValue, config);
 
   initialValue = initialValue === undefined ? '#ffffff' : initialValue;
 
-  Field.call(this, name, initialValue, parentField, parentContext);
+  Field.call(this, name, initialValue, parentField, config);
 
   this.type = 'color';
 }

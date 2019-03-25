@@ -29,7 +29,7 @@ console.log(state.shape.height); // -> 480
 
 // Via the $field property, you can access objects directly
 console.log(state.$field.shape.width)
-// -> SliderField {
+// -> Slider {
 //      type: 'slider',
 //      name: 'width',
 //      min: 0,
@@ -38,26 +38,26 @@ console.log(state.$field.shape.width)
 
 // Subscribing to events as they're triggered. These may be triggered many times
 // per tick, depending on how often the values are modified programatically.
-state.$config.onChanges(function (changes) {
-  console.log('changes:', changes);
+state.$onChange(function (change) {
+  console.log('change:', change);
 });
 
 // Subscribing to batched events:
-state.$config.onFinishChanges(function (changes) {
-  console.log('finishChanges:', changes);
+state.$onChanges(function (changes) {
+  console.log('changes:', changes);
   // Once the updates below are applied, on the next tick this
   // function will be called with changes:
   //
   // changes = {
   //  'shape.width': {
-  //    field: SliderField { ... }
+  //    field: Slider { ... }
   //    name: 'width',
   //    path: 'shape.width',
   //    oldValue: 480,
   //    value: 500
   //  },
   //  'shape.height': {
-  //    field: SliderField { ... }
+  //    field: Slider { ... }
   //    name: 'height',
   //    path: 'shape.height',
   //    oldValue: 480,
@@ -66,8 +66,8 @@ state.$config.onFinishChanges(function (changes) {
   // }
 });
 
-state.$config.onFinishChange('shape.width', function (update) {
-  console.log('finishChange: shape.width', update);
+state.$onChanges('shape.width', function (update) {
+  console.log('changes: shape.width', update);
 });
 
 state.shape.width = 400;
