@@ -130,7 +130,7 @@ false`)),
     step: 0.01
   })
 }).onChanges(updates => {
-  if (updates['analysis.cost']) {
+  if (updates.cost) {
     controls.analysis.benefit = 1 - controls.analysis.cost;
   } else {
     controls.analysis.cost = 1 - controls.analysis.benefit;
