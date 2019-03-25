@@ -141,7 +141,7 @@ false`)),
   inlineControlsDiv,
   
   h('h2', 'Advanced Usage'),
-  h('p', 'Sections are a bit fancy so that you typically just get or set properties by value. You may access the section instance using ', h('code', '$field'), '.'),
+  h('p', 'Sections are a bit fancy so that you can typically just get or set properties by name. You may access the section instance itself using ', h('code', '$field'), '.'),
 
   h('pre', h('code', `> controls.simulation.$field
 Section {
@@ -153,7 +153,7 @@ Section {
   …
 }`)),
 
-  h('p', 'In case you need to interface with the control field instances directly, you may access the field using ', h('code', '$path'), '.'),
+  h('p', 'In case you need to interface with nested control field instances directly, you may access the field using ', h('code', '$path'), '.'),
   h('pre', h('code', `> controls.$path.simulation.shape.height
 Slider {
   parent: Section,
