@@ -10,7 +10,7 @@
     "build:example": "rm -rf docs && mkdir -p docs && browserify examples/demo3.js -t es2020 -t [ envify --NODE_ENV production ] | uglifyjs -cm |  indexhtmlify > docs/index.html",
     "build:rollup": "npm run bundle:rollup && npm run minify:rollup",
     "bundle:rollup": "mkdir -p dist && rollup -c",
-    "minify:rollup": "uglifyjs -cm -o dist/gui.min.js dist/gui.js && uglifyjs -cm -o dist/state.min.js dist/state.js",
+    "minify:rollup": "uglifyjs -cm -o dist/gui.min.js dist/gui.js && uglifyjs -cm -o dist/state.min.js dist/state.js && uglifyjs -cm -o dist/gui.umd.min.js dist/gui.umd.js && uglifyjs -cm -o dist/state.umd.min.js dist/state.umd.js",
     "lint": "semistandard",
     "lint-fix": "semistandard --fix"
   },
