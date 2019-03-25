@@ -1,4 +1,4 @@
-var Controls = require('./');
+var Controls = require('../index');
 
 var slider = Controls.Slider({
   value: 5,

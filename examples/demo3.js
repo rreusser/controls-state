@@ -1,5 +1,5 @@
-var wrapGui = require('./gui');
-var Controls = require('./index');
+var wrapGui = require('../gui');
+var Controls = require('../index');
 var h = require('h');
 var beautify = require('json-beautify');
 

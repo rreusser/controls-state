@@ -5,8 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "node test.js",
+    "start": "budo --open --live --host localhost examples/demo3.js",
     "build": "npm run build:rollup",
-    "build:example": "rm -rf docs && mkdir -p docs && browserify demo3.js -t es2020 -t [ envify --NODE_ENV production ] | uglifyjs -cm |  indexhtmlify > docs/index.html",
+    "build:example": "rm -rf docs && mkdir -p docs && browserify examples/demo3.js -t es2020 -t [ envify --NODE_ENV production ] | uglifyjs -cm |  indexhtmlify > docs/index.html",
     "build:rollup": "npm run bundle:rollup && npm run minify:rollup",
     "bundle:rollup": "mkdir -p dist && rollup -c",
     "minify:rollup": "uglifyjs -cm -o dist/gui.min.js dist/gui.js && uglifyjs -cm -o dist/state.min.js dist/state.js",
@@ -19,7 +20,7 @@
   "devDependencies": {
     "brfs": "^2.0.2",
     "browserify": "^16.2.2",
-    "budo": "^11.3.2",
+    "budo": "^11.6.1",
     "envify": "^4.1.0",
     "es2020": "^1.1.9",
     "h": "^0.1.0",

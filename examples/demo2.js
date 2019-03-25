@@ -1,4 +1,4 @@
-var controls = require('./');
+var controls = require('../index');
 
 var state = controls({
   // It can try to infer types:
