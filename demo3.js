@@ -14,7 +14,6 @@ fontStyle.textContent = `
 
 require('insert-css')(`
 .docs {
-  width: calc(100% - 320px);
   max-width: 600px;
   margin: 15px;
   font-family: 'Helvetica', sans-serif;
