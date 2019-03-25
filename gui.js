@@ -67,12 +67,12 @@ function createGui (state, opts) {
       return h('div', {
         className: `${className}__field ${className}__field--select`
       },
-        h('label', {htmlFor: field.path}, h('span', null, config.label || field.name)),
+        h('label', {htmlFor: `${className}-${field.path}`}, h('span', null, config.label || field.name)),
         ' ',
         h('span', {className: `${className}__container`},
           h('select', {
             name: field.path,
-            id: field.path,
+            id: `${className}-${field.path}`,
             onChange: event => this.props.field.value = event.target.value,
           }, field.options.map(option =>
             h('option', {
@@ -92,11 +92,11 @@ function createGui (state, opts) {
       return h('div', {
         className: `${className}__field ${className}__field--text`
       },
-        h('label', {htmlFor: field.path}, h('span', null, config.label || field.name)),
+        h('label', {htmlFor: `${className}-${field.path}`}, h('span', null, config.label || field.name)),
         ' ',
         h('span', {className: `${className}__container`},
           h('input', {
-            id: field.path,
+            id: `${className}-${field.path}`,
             name: field.path,
             type: 'text',
             value: field.value,
@@ -114,11 +114,11 @@ function createGui (state, opts) {
       return h('div', {
         className: `${className}__field ${className}__field--checkbox`
       },
-        h('label', {htmlFor: field.path}, h('span', null, config.label || field.name)),
+        h('label', {htmlFor: `${className}-${field.path}`}, h('span', null, config.label || field.name)),
         ' ',
         h('span', {className: `${className}__container`},
           h('input', {
-            id: field.path,
+            id: `${className}-${field.path}`,
             name: field.path,
             type: 'checkbox',
             checked: field.value,
@@ -150,11 +150,11 @@ function createGui (state, opts) {
       return h('div', {
         className: `${className}__field ${className}__field--color`
       },
-        h('label', {htmlFor: field.path}, h('span', null, config.label || field.name)),
+        h('label', {htmlFor: `${className}-${field.path}`}, h('span', null, config.label || field.name)),
         ' ',
         h('span', {className: `${className}__container`},
           h('input', {
-            id: field.path,
+            id: `${className}-${field.path}`,
             name: field.path,
             type: 'color',
             value: field.value,
@@ -174,11 +174,11 @@ function createGui (state, opts) {
       return h('div', {
         className: `${className}__field ${className}__field--slider`
       },
-        h('label', {htmlFor: field.path}, h('span', null, config.label || field.name)),
+        h('label', {htmlFor: `${className}-${field.path}`}, h('span', null, config.label || field.name)),
         ' ',
         h('span', {className: `${className}__container`},
           h('input', {
-            id: field.path,
+            id: `${className}-${field.path}`,
             name: field.path,
             type: 'range',
             min: field.min,
