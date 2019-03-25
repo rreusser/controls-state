@@ -2,13 +2,18 @@
 import commonjs from 'rollup-plugin-commonjs';
 import nodeResolve from 'rollup-plugin-node-resolve';
 import browserifyPlugin from 'rollup-plugin-browserify-transform'
-import brfs from 'brfs'
 import es2020 from 'es2020'
 
-export default {
+export default [{
   input: 'index.js',
+  output: 'dist/state.js',
+}, {
+  input: 'gui.js',
+  output: 'dist/gui.js',
+}].map(bundle => ({
+  input: bundle.input,
   output: {
-    file: 'dist/control-panel-2.js',
+    file: bundle.output,
     format: 'cjs'
   },
   plugins: [
@@ -18,7 +23,6 @@ export default {
       browser: true
     }),
     commonjs(),
-    browserifyPlugin(brfs),
     browserifyPlugin(es2020),
   ]
-};
+}));

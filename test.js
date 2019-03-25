@@ -1,6 +1,6 @@
 var test = require('tape');
 var Controls = require('./');
-// var raf = require('raf');
+var raf = require('raf');
 
 test('controls', function (t) {
   t.test('field types', function (t) {
@@ -150,28 +150,11 @@ test('controls', function (t) {
     });
   });
 
-  t.test('context', function (t) {
-    t.test('unbound components have no context', function (t) {
-      var field = Controls.Slider(5);
-      t.equal(field.context, null);
-      t.end();
-    });
-
-    t.test('using a component injects context', function (t) {
-      var field = Controls.Slider(5);
-      var c = Controls({width: field});
-      t.notEqual(field.context, null);
-      t.equal(c.$field.context, field.context.parentContext);
-      t.end();
-    });
-  });
-
-  /*
   t.test('events', function (t) {
     t.test('unbound components can have events attached', function (t) {
       var field = Controls.Slider(5);
       callCount = 0;
-      field.onChange(function () {
+      field.onBeforeChange(function () {
         callCount++;
       });
       field.value = 10;
@@ -188,7 +171,7 @@ test('controls', function (t) {
         });
 
         var called = false;
-        c.$field.onFinishChanges(function (updates) {
+        c.$field.onChanges(function (updates) {
           t.equal(updates['shape.width'].value, 240);
           called = true;
         });
@@ -202,13 +185,15 @@ test('controls', function (t) {
       });
     });
 
-    t.test('emits change:path events', function (t) {
+    t.test('emits onChange events', function (t) {
       var c = Controls({foo: 5});
 
       var called = false;
-      c.$path.foo.onFinishChange(function (event) {
+      c.$path.foo.onChange(function (event) {
         t.equal(event.field, c.$path.foo);
-        t.equal(event.path, 'foo');
+        t.equal(event.name, 'foo');
+        t.equal(event.fullPath, 'foo');
+        t.equal(event.path, '');
         t.equal(event.oldValue, 5);
         t.equal(event.value, 7);
         called = true;
@@ -226,9 +211,11 @@ test('controls', function (t) {
       var c = Controls({shape: {width: 120}});
 
       var called = false;
-      c.$path.shape.width.onFinishChange(function (event) {
+      c.$path.shape.width.onChange(function (event) {
         t.equal(event.field, c.$path.shape.width);
-        t.equal(event.path, 'shape.width');
+        t.equal(event.name, 'width');
+        t.equal(event.path, '');
+        t.equal(event.fullPath, 'shape.width');
         t.equal(event.oldValue, 120);
         t.equal(event.value, 240);
         called = true;
@@ -246,9 +233,11 @@ test('controls', function (t) {
       var c = Controls({shape: {width: 120}});
 
       var callCount = 0;
-      c.$path.shape.onFinishChange(function (event) {
+      c.shape.$onChange(function (event) {
         t.equal(event.field, c.$path.shape.width);
-        t.equal(event.path, 'shape.width');
+        t.equal(event.fullPath, 'shape.width');
+        t.equal(event.name, 'width');
+        t.equal(event.path, 'width');
         t.equal(event.oldValue, 120);
         t.equal(event.value, 240);
         callCount++;
@@ -266,9 +255,11 @@ test('controls', function (t) {
       var c = Controls({foo: 5});
 
       var called = false;
-      c.$field.onFinishChanges(function (updates) {
+      c.$onChanges(function (updates) {
         t.equal(updates.foo.field, c.$path.foo);
         t.equal(updates.foo.path, 'foo');
+        t.equal(updates.foo.fullPath, 'foo');
+        t.equal(updates.foo.name, 'foo');
         t.equal(updates.foo.value, 7);
         t.equal(updates.foo.oldValue, 5);
         called = true;
@@ -286,7 +277,7 @@ test('controls', function (t) {
       var c = Controls({shape: {width: 120}});
 
       var called = false;
-      c.$field.onFinishChanges(function (updates) {
+      c.$onChanges(function (updates) {
         t.equal(updates['shape.width'].value, 240);
         called = true;
       });
@@ -303,7 +294,7 @@ test('controls', function (t) {
       var c = Controls({shape: {width: 320, height: 240}});
 
       var callCount = 0;
-      c.$field.onFinishChanges(function (updates) {
+      c.$onChanges(function (updates) {
         callCount++;
         t.equal(updates['shape.width'].oldValue, 320);
         t.equal(updates['shape.width'].value, 1024);
@@ -322,7 +313,6 @@ test('controls', function (t) {
       });
     });
   });
-  */
 
   t.test('an unbound slider field', function (t) {
     t.test('creation', function (t) {
@@ -374,7 +364,7 @@ test('controls', function (t) {
     t.test('can attach events', function (t) {
       var slider = Controls.Slider({name: 'foo'});
       var callCount = 0;
-      slider.onChanges(function (updates) {
+      slider.onBeforeChanges(function (updates) {
         callCount++;
       });
       slider.value = 7;

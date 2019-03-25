@@ -1,11 +1,14 @@
 'use strict';
 
+var global = require('global');
+
 module.exports = Section;
 
 var COLOR_REGEX = /(#(?:[0-9a-fA-F]{2,4}){2,4}|(#[0-9a-fA-F]{3})|(rgb|hsl)a?((-?\d+%?[,\s]+){2,3}\s*[\d.]+%?))/;
 
 function isHTMLElement(element) {
-    return element instanceof Element || element instanceof HTMLDocument;
+  return (global.Element && element instanceof global.Element) ||
+    (global.HTMLDocument && element instanceof global.HTMLDocument);
 }
 
 function inferType (value) {

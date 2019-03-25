@@ -5,10 +5,11 @@
   "main": "index.js",
   "scripts": {
     "test": "node test.js",
-    "build": "rm -rf docs && mkdir -p docs && browserify demo3.js -t es2020 -t [ envify --NODE_ENV production ] | uglifyjs -cm |  indexhtmlify > docs/index.html",
+    "build": "npm run build:rollup",
+    "build:example": "rm -rf docs && mkdir -p docs && browserify demo3.js -t es2020 -t [ envify --NODE_ENV production ] | uglifyjs -cm |  indexhtmlify > docs/index.html",
     "build:rollup": "npm run bundle:rollup && npm run minify:rollup",
     "bundle:rollup": "mkdir -p dist && rollup -c",
-    "minify:rollup": "uglifyjs -cm -o dist/control-panel-2.min.js dist/control-panel-2.js",
+    "minify:rollup": "uglifyjs -cm -o dist/gui.min.js dist/gui.js && uglifyjs -cm -o dist/state.min.js dist/state.js",
     "lint": "semistandard",
     "lint-fix": "semistandard --fix"
   },
@@ -37,6 +38,7 @@
   },
   "dependencies": {
     "event-emitter": "^0.3.5",
+    "global": "^4.3.2",
     "insert-css": "^2.0.0",
     "preact-classless-component": "^1.1.1",
     "raf": "^3.4.0",

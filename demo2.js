@@ -1,11 +1,11 @@
 var controls = require('./');
 
-var state = window.state = controls({
+var state = controls({
   // It can try to infer types:
   background: '#ff0000',
 
   // You can instantiate controls manually to provide more configuration
-  alpha: controls.slider(0.5, {min: 0, max: 1, step: 0.01}),
+  alpha: controls.Slider(0.5, {min: 0, max: 1, step: 0.01}),
 
   // Objects result in nested sections:
   shape: {
@@ -19,7 +19,7 @@ console.log('width:', state.shape.width); // -> 640
 console.log('shape.height:', state.shape.height); // -> 480
 
 // Via the $path property, you can access the underlying objects
-console.log(state.$path.shape.width);
+// console.log(state.$path.shape.width);
 // -> Slider {
 //      type: 'slider',
 //      name: 'width',
@@ -28,41 +28,37 @@ console.log(state.$path.shape.width);
 //      step: 1 }
 
 // Subscribing to batched events:
-state.$config.onFinishChanges(function (changes) {
-  console.log('finish changes:', changes);
+state.$onChanges(function (changes) {
+  Object.keys(changes).map(path => console.log( path +':', {
+    name: changes[path].name,
+    path: changes[path].path,
+    fullPath: changes[path].fullPath,
+    oldValue: changes[path].oldValue,
+    value: changes[path].value,
+  }));
   // Once the updates below are applied, on the next tick this
   // function will be called with changes:
   //
   // changes = {
   //  'shape.width': {
-  //    field: Slider { ... }
   //    name: 'width',
   //    path: 'shape.width',
+  //    fullPath: 'shape.width',
   //    oldValue: 480,
   //    value: 500
   //  },
   //  'shape.height': {
-  //    field: Slider { ... }
   //    name: 'height',
   //    path: 'shape.height',
+  //    fullPath: 'shape.height',
   //    oldValue: 480,
   //    value: 500
   //  }
   // }
 });
 
-state.$config.onFinishChange('shape.width', function (update) {
-  console.log('finish change: shape.width', update);
-});
-
-state.$config.onChange('shape.width', function (update) {
-  console.log('change shape.width', update);
-});
-
-state.$config.onChanges(function (update) {
-  console.log('changes:', update);
-});
-
+// Multiple changes in a single tick get batched and reported
+// as one "changes" event
 state.shape.width = 400;
 state.shape.height = 400;
 state.shape.height = 500;

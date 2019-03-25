@@ -1,6 +1,7 @@
 var preact = require('preact');
-var createClass = require('preact-classless-component');
+var createClass = require('./src/util/preact-classless-component');
 var css = require('insert-css');
+var toggleSlide = require('./src/util/toggle-slide');
 
 module.exports = createGui;
 
@@ -682,79 +683,3 @@ function createGui (state, opts) {
   return state.$field.value;
 }
 
-/**
-* getHeight - for elements with display:none
- */
-function getHeight (el) {
-  var elStyle = window.getComputedStyle(el);
-  var elDisplay = elStyle.display;
-  var elPosition = elStyle.position;
-  var elVisibility = elStyle.visibility;
-  var elMaxHeight = elStyle.maxHeight;
-  var elMaxHeightNumber = elMaxHeight.replace('px', '').replace('%', '');
-  var computedHeight = 0;
-
-  if(elDisplay !== 'none' && elMaxHeightNumber !== '0') {
-    return el.offsetHeight;
-  }
-
-  el.style.maxHeight = '';
-  el.style.position = 'absolute';
-  el.style.visibility = 'hidden';
-  el.style.display = 'block';
-
-  computedHeight = el.offsetHeight;
-
-  el.style.maxHeight = elMaxHeight;
-  el.style.display = elDisplay;
-  el.style.position = elPosition;
-  el.style.visibility = elVisibility;
-
-  return computedHeight;
-};
-
-
-function toggleSlide (el, callback) {
-  var elMaxHeightNumber = el.style.maxHeight.replace('px', '').replace('%', '');
-
-  if (elMaxHeightNumber === '0') {
-    var maxComputedHeight = getHeight(el) + 'px';
-
-    el.style.transition = 'max-height 0.1s ease-in-out';
-    el.style.overflowY = 'hidden';
-    el.style.maxHeight = '0';
-    el.style.display = 'block';
-
-    var restore = function () {
-      el.style.transition = 'none';
-      el.style.overflowY = 'visible';
-      el.style.maxHeight = '';
-      el.removeEventListener('transitionend', restore);
-      callback && callback();
-    }
-
-    el.addEventListener('transitionend', restore);
-
-    setTimeout(function() {
-      el.style.maxHeight = maxComputedHeight;
-    }, 10);
-  } else {
-    var maxComputedHeight = getHeight(el) + 'px';
-
-    el.style.transition = 'max-height 0.1s ease-in-out';
-    el.style.overflowY = 'hidden';
-    el.style.maxHeight = maxComputedHeight;
-    el.style.display = 'block';
-
-    var restore = function () {
-      el.style.transition = 'none';
-      el.removeEventListener('transitionend', restore);
-      callback && callback();
-    }
-    el.addEventListener('transitionend', restore);
-
-    setTimeout(function() {
-      el.style.maxHeight = '0';
-    }, 10);
-  }
-}

@@ -464,7 +464,7 @@ function Field(name, initialValue, parentField, config) {
           field: this,
           name: this.name,
           path: this.path,
-          fullpath: this.path,
+          fullPath: this.path,
           oldValue: value,
           value: newValue
         };
