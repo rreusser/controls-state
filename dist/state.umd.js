@@ -797,7 +797,7 @@
 	    var field = displayFields[fieldName] = constructField(fieldName, inputFields[fieldName], _this);
 	    var config = field.$config;
 
-	    if (field.type === 'raw') {
+	    if (field.type === 'raw' || field.type === 'button') {
 
 	      var enumerable = config.enumerable === undefined ? false : !!config.enumerable;
 
