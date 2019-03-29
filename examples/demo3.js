@@ -26,8 +26,6 @@ require('insert-css')(`
 }
 
 .myControlPanel {
-  font-family: ${FONT_FAMILY}, Helvetica, serif;
-  font-size: 13px;
   position: fixed;
   top: 0;
   right: 10px;
@@ -248,10 +246,29 @@ var controls = window.controls = Controls(
 )
 
 var gui1 = wrapGui(controls, {
-  className: 'myControlPanel'
+  containerCSS: "position:fixed;top:0;right:8px",
+  theme: {
+    fontFamily: `${FONT_FAMILY}, Helvetica, serif`,
+    fontColor: 'black',
+    controlBgColor: 'white',
+    controlBorderRadius: 2,
+    controlBorderColor: '#aaa',
+    fieldBgColor: 'white',
+    fieldHoverColor: '#f8f8f8',
+    fieldActiveColor: '#ddd',
+    fieldBorderColor: '#aaa',
+    sectionHeadingColor: 'white',
+    sectionHeadingBgColor: '#28e',
+    sectionHeadingHoverColor: '#5af',
+    sectionHeadingBorderColor: '#28e',
+    visibilityFontColor: '#fff',
+    sliderThumbColor: '#aaa',
+    focusBorderColor: '#888',
+  }
 });
 
 var gui2 = wrapGui(controls, {
+  containerCSS: null,
   className: 'myControlPanel2',
   style: false,
   root: inlineControlsDiv,

@@ -2,15 +2,55 @@ var preact = require('preact');
 var createClass = require('./src/util/preact-classless-component');
 var css = require('insert-css');
 var toggleSlide = require('./src/util/toggle-slide');
+var defaults = require('defaults');
 
 module.exports = createGui;
 
+function toPx (number) {
+  number = '' + number;
+  return /[0-9\.]*/.test(number) ? number + 'px' : number;
+}
+
 function createGui (state, opts) {
-  opts = opts || {};
+  opts = defaults(opts || {}, {
+    containerCSS: "position:fixed;top:0;right:8px",
+    style: true,
+    className: `controlPanel-${Math.random().toString(36).substring(2, 15)}`,
+  });
 
-  var style = opts.style === undefined ? true : !!opts.style;
+  var theme = Object.assign({}, defaults(opts.theme || {}, {
+    fontFamily: "'Helvetica', sans-serif",
+    fontSize: 13,
+    sliderHeight: 22,
+    controlBgColor: '#444',
+    fieldBgColor: '#333',
+    fieldHoverColor: '#383838',
+    fieldActiveColor: '#383838',
+    fieldBorderColor: '#232323',
+    sectionHeadingBgColor: '#222',
+    sectionHeadingHoverColor: '#444',
+    sectionHeadingColor: '#e8e8e8',
+    sectionHeadingBorderColor: '#222',
+    controlBorderColor: '#666',
+    sliderThumbColor: '#888',
+    fontColor: '#e8e8e8',
+    sectionHeadingHeight: 24,
+    minLabelWidth: 110,
+    minControlWidth: 130,
+    visibilityFontColor: 'rgba(0, 0, 0, 0.3)',
+    focusBorderColor: '#888',
+    controlBorderRadius: 2,
+  }));
 
-  var className = opts.className === undefined ? 'controlPanel' : opts.className;
+  var className = opts.className;
+
+  theme.fontSize = toPx(theme.fontSize);
+  theme.sliderHeight = toPx(theme.sliderHeight);
+  theme.sectionHeadingHeight = toPx(theme.sectionHeadingHeight);
+  theme.minLabelWidth = toPx(theme.minLabelWidth);
+  theme.minControlWidth = toPx(theme.minControlWidth);
+  theme.controlBorderRadius = toPx(theme.controlBorderRadius);
+
   var h = preact.h;
   var render = preact.render;
 
@@ -280,6 +320,9 @@ function createGui (state, opts) {
           e.stopPropagation();
         });
       }
+      if (opts.containerCSS) {
+        c.style.cssText = opts.containerCSS;
+      }
     },
     render: function () {
       return h('div', {
@@ -290,30 +333,22 @@ function createGui (state, opts) {
     }
   });
 
-  if (style) {
-    var SLIDER_HEIGHT = '22px';
-    var CONTROL_BG_COLOR = '#444';
-    var PANEL_BG_COLOR = '#333';
-    var FIELD_HOVER_COLOR = '#383838';
-    var SECTION_HEADING_BG_COLOR = '#222';
-    var SECTION_HEADING_HOVER_COLOR = '#444';
-    var DIVIDER_COLOR = '#232323';
-    var CONTROL_BORDER_COLOR = '#555';
-    var THUMB_COLOR = '#888';
-    var TEXT_COLOR = '#e8e8e8';
-    var SECTION_HEADING_HEIGHT = '24px';
-    var MIN_LABEL_WIDTH = '110px';
-    var MIN_CONTROL_WIDTH = '130px';
-
+  if (opts.style) {
     var FOCUS_BORDER = `
       outline: none;
-      border-color: #888;
-      box-shadow: 0 0 3px rgba(255, 255, 255, 0.5);
+      border-color: ${theme.focusBorderColor};
+      box-shadow: 0 0 3px ${theme.focusBorderColor};
     `;
 
     css(`
       .${className} {
-        color: ${TEXT_COLOR};
+        color: ${theme.fontColor};
+        ${theme.fontSize ? `font-size: ${theme.fontSize}` : ''};
+        ${opts.theme.fontFamily ? `font-family: ${opts.theme.fontFamily}` : ''};
+      }
+
+      .${className} > .${className}__section:first-child > .${className}__sectionHeading:first-child {
+        border-right: 1px solid ${theme.sectionHeadingBorderColor};
       }
 
       .${className}__sectionHeading {
@@ -325,17 +360,18 @@ function createGui (state, opts) {
         cursor: pointer;
         width: 100%;
 
-        background-color: ${SECTION_HEADING_BG_COLOR};
-        height: ${SECTION_HEADING_HEIGHT};
-        line-height: ${SECTION_HEADING_HEIGHT};
+        color: ${theme.sectionHeadingColor};
+        background-color: ${theme.sectionHeadingBgColor};
+        height: ${theme.sectionHeadingHeight};
+        line-height: ${theme.sectionHeadingHeight};
       }
 
       .${className}__sectionHeading button:focus {
-        background-color: ${SECTION_HEADING_HOVER_COLOR};
+        background-color: ${theme.sectionHeadingHoverColor};
       }
 
       .${className}__sectionHeading > button {
-        height: ${SECTION_HEADING_HEIGHT};
+        height: 100%;
         vertical-align: middle;
         font-size: 1.0em;
         cursor: pointer;
@@ -350,21 +386,14 @@ function createGui (state, opts) {
         width: 100%;
       }
 
-      .${className} a {
-        color: #cde;
-      }
-
       .${className}__field {
+        border-right: 1px solid ${theme.fieldBorderColor};
         position: relative;
         height: 30px;
         line-height: 31px;
         display: flex;
         flex-direction: row;
-        background-color: ${PANEL_BG_COLOR};
-      }
-
-      .${className}__field:not(:first-child) {
-        border-top: 1px solid ${DIVIDER_COLOR};
+        background-color: ${theme.fieldBgColor};
       }
 
       .${className}__field--raw {
@@ -372,11 +401,11 @@ function createGui (state, opts) {
       }
 
       .${className}__field:hover {
-        background-color: ${FIELD_HOVER_COLOR};
+        background-color: ${theme.fieldHoverColor};
       }
 
       .${className}__sectionHeading:hover {
-        background-color: ${SECTION_HEADING_HOVER_COLOR};
+        background-color: ${theme.sectionHeadingHoverColor};
       }
 
       .${className}__sectionHeading > button::before {
@@ -409,7 +438,7 @@ function createGui (state, opts) {
         align-items: center;
         position: relative;
 
-        min-width: ${MIN_CONTROL_WIDTH};
+        min-width: ${theme.minControlWidth};
         width: 30px;
         padding-right: 8px;
         text-indent: 8px;
@@ -424,14 +453,14 @@ function createGui (state, opts) {
         height: 30px;
         display: inline-block;
         right: 15px;
-        text-shadow:  1px  0   rgba(0,0,0,0.3),
-                      0    1px rgba(0,0,0,0.3),
-                     -1px  0   rgba(0,0,0,0.3),
-                      0   -1px rgba(0,0,0,0.3),
-                      1px  1px rgba(0,0,0,0.3),
-                      1px -1px rgba(0,0,0,0.3),
-                     -1px  1px rgba(0,0,0,0.3),
-                     -1px -1px rgba(0,0,0,0.3);
+        text-shadow:  1px  0   ${theme.visibilityFontColor},
+                      0    1px ${theme.visibilityFontColor},
+                     -1px  0   ${theme.visibilityFontColor},
+                      0   -1px ${theme.visibilityFontColor},
+                      1px  1px ${theme.visibilityFontColor},
+                      1px -1px ${theme.visibilityFontColor},
+                     -1px  1px ${theme.visibilityFontColor},
+                     -1px -1px ${theme.visibilityFontColor};
       }
 
       .${className}__field--button button {
@@ -449,11 +478,11 @@ function createGui (state, opts) {
       }
 
       .${className}__field--button > button:hover {
-        background-color: #444;
+        background-color: ${theme.fieldHoverColor};
       }
 
       .${className}__field--button > button:active {
-        background-color: #222;
+        background-color: ${theme.fieldActiveColor};
       }
 
       .${className}__field--button > button:focus {
@@ -465,7 +494,7 @@ function createGui (state, opts) {
       }
 
       .${className}__rawContent {
-        max-width: calc(${MIN_CONTROL_WIDTH} + ${MIN_LABEL_WIDTH} + 10px);
+        max-width: calc(${theme.minControlWidth} + ${theme.minLabelWidth} + 10px);
         margin: 0;
         padding: 0;
       }
@@ -479,18 +508,38 @@ function createGui (state, opts) {
       .${className}__rawContent > p:first-child {
         margin-top: 5px;
       }
+
       .${className}__rawContent > p:last-child{
         margin-bottom: 5px;
       }
 
       .${className}__section {
         margin: 0;
+        margin-top: -1px;
         padding: 0;
         border: none;
       }
 
+      .${className}__sectionHeading {
+        border: 1px solid ${theme.sectionHeadingBorderColor};
+        position: relative;
+        z-index: 1;
+        box-sizing: border-box;
+      }
+
       .${className}__sectionFields {
         margin-left: 4px;
+        box-sizing: border-box;
+      }
+
+      .${className}__sectionFields .${className}__field {
+        border-bottom: 1px solid ${theme.fieldBorderColor};
+        box-sizing: border-box;
+      }
+
+      .${className}__sectionFields .${className}__sectionFields {
+        border-right: none;
+        margin-right: 0;
       }
 
       .${className} p {
@@ -503,7 +552,7 @@ function createGui (state, opts) {
         text-indent: 8px;
         margin-right: 4px;
         display: inline-block;
-        min-width: ${MIN_LABEL_WIDTH};
+        min-width: ${theme.minLabelWidth};
         line-height: 31px;
       }
 
@@ -553,10 +602,10 @@ function createGui (state, opts) {
         margin: 0;
         padding: 0 5px;
         border: none;
-        height: ${SLIDER_HEIGHT};
-        border-radius: 2px;
-        background-color: ${CONTROL_BG_COLOR};
-        border: 1px solid ${CONTROL_BORDER_COLOR};
+        height: ${theme.sliderHeight};
+        border-radius: ${theme.controlBorderRadius};
+        background-color: ${theme.controlBgColor};
+        border: 1px solid ${theme.controlBorderColor};
         color: inherit;
       }
 
@@ -571,8 +620,8 @@ function createGui (state, opts) {
         margin: 0;
         border: 1px solid #aaa;
         width: 50px;
-        height: ${SLIDER_HEIGHT};
-        border-radius: 2px;
+        height: ${theme.sliderHeight};
+        border-radius: ${theme.controlBorderRadius};
         padding: 0;
       }
 
@@ -587,124 +636,109 @@ function createGui (state, opts) {
         margin-bottom: 0.2em;
       }
 
-      .${className}__field input[type="range"] {
+      .${className}__field--slider input[type="range"] {
         cursor: resize-ew;
-        border: 1px solid ${CONTROL_BORDER_COLOR};
+        border: 1px solid ${theme.controlBorderColor};
       }
 
       .${className} select {
-        height: ${SLIDER_HEIGHT};
+        height: ${theme.sliderHeight};
         width: 100%;
         color: inherit;
         -webkit-appearance: none;
         -moz-appearance: none;
         appearance: none;
-        background-color: ${CONTROL_BG_COLOR};
-        border: 1px solid ${CONTROL_BORDER_COLOR};
+        background-color: ${theme.controlBgColor};
+        border: 1px solid ${theme.controlBorderColor};
         outline: none;
         margin: 0;
         padding: 0 5px;
-        border-radius: 0;
-        background-image: linear-gradient(${CONTROL_BORDER_COLOR}, ${CONTROL_BORDER_COLOR}),
-          linear-gradient(-130deg, transparent 50%, ${CONTROL_BG_COLOR} 52%),
-          linear-gradient(-230deg, transparent 50%, ${CONTROL_BG_COLOR} 52%),
-          linear-gradient(${TEXT_COLOR} 42%, ${CONTROL_BG_COLOR} 42%);
+        border-radius: ${theme.controlBorderRadius};
+        background-image: linear-gradient(${theme.controlBorderColor}, ${theme.controlBorderColor}),
+          linear-gradient(-130deg, transparent 50%, ${theme.controlBgColor} 52%),
+          linear-gradient(-230deg, transparent 50%, ${theme.controlBgColor} 52%),
+          linear-gradient(${theme.fontColor} 42%, ${theme.controlBgColor} 42%);
         background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
         background-size: 1px 100%, 20px 16px, 20px 16px, 20px 60%;
         background-position: right 20px center, right bottom, right bottom, right bottom;
       }
 
-      .${className} input[type=range] {
+      .${className}__field--slider input[type=range] {
         width: 100%;
-        height: ${SLIDER_HEIGHT};
+        height: ${theme.sliderHeight};
         -webkit-appearance: none;
         vertical-align: middle;
-        border-radius: 2px;
+        border-radius: ${theme.controlBorderRadius};
+        margin: 0;
       }
 
-      .${className} input[type=range]::-webkit-slider-runnable-track {
-        height: ${SLIDER_HEIGHT};
-        cursor: ew-resize;
-        background: ${ CONTROL_BG_COLOR };
-      }
-
-      .${className} input[type=range]::-webkit-slider-thumb {
-        height: ${SLIDER_HEIGHT};
-        width: ${SLIDER_HEIGHT};
-        background: ${THUMB_COLOR};
-        border-radius: 0;
-        cursor: ew-resize;
-        -webkit-appearance: none;
-      }
-
-      .${className} input[type=range]::-moz-range-thumb {
-        height: ${SLIDER_HEIGHT};
-        width: ${SLIDER_HEIGHT};
-        border-radius: 0;
-        background: ${THUMB_COLOR};
-        cursor: ew-resize;
-      }
-
-      .${className} input[type=range]::-ms-thumb {
-        height: ${SLIDER_HEIGHT};
-        width: ${SLIDER_HEIGHT};
-        border-radius: 0;
-        background: ${THUMB_COLOR};
-        cursor: ew-resize;
-      }
-
-
-      .${className} input[type=range]:focus::-webkit-slider-runnable-track {
-        background: ${ CONTROL_BG_COLOR };
+      .${className}__field--slider input[type=range]:focus {
         ${FOCUS_BORDER}
       }
 
-      .${className} input[type=range]::-moz-range-track {
-        height: ${SLIDER_HEIGHT};
+      .${className}__field--slider input[type=range]::-webkit-slider-thumb {
+        height: ${theme.sliderHeight};
+        width: ${theme.sliderHeight};
+        background: ${theme.sliderThumbColor};
+        border-radius: 0;
         cursor: ew-resize;
-        background: ${CONTROL_BG_COLOR};
+        -webkit-appearance: none;
       }
 
-      .${className} input[type=range]::-ms-track {
-        height: ${SLIDER_HEIGHT};
+      .${className}__field--slider input[type=range]::-moz-range-thumb {
+        height: ${theme.sliderHeight};
+        width: ${theme.sliderHeight};
+        border-radius: 0;
+        background: ${theme.sliderThumbColor};
+        cursor: ew-resize;
+      }
+
+      .${className}__field--slider input[type=range]::-ms-thumb {
+        height: ${theme.sliderHeight};
+        width: ${theme.sliderHeight};
+        border-radius: 0;
+        background: ${theme.sliderThumbColor};
+        cursor: ew-resize;
+      }
+
+      .${className}__field--slider input[type=range]::-webkit-slider-runnable-track {
+        height: ${theme.sliderHeight};
+        cursor: ew-resize;
+        background: ${theme.controlBgColor};
+      }
+
+      .${className}__field--slider input[type=range]::-moz-range-track {
+        height: ${theme.sliderHeight};
+        cursor: ew-resize;
+        background: ${theme.controlBgColor};
+      }
+
+      .${className}__field--slider input[type=range]::-ms-track {
+        height: ${theme.sliderHeight};
         cursor: ew-resize;
         background: transparent;
         border-color: transparent;
         color: transparent;
       }
 
-      .${className} input[type=range]::-ms-fill-lower {
-        background: ${CONTROL_BG_COLOR};
+      .${className}__field--slider input[type=range]::-ms-fill-lower {
+        background: ${theme.controlBgColor};
       }
 
-      .${className} input[type=range]::-ms-fill-upper {
-        background: ${CONTROL_BG_COLOR};
+      .${className}__field--slider input[type=range]::-ms-fill-upper {
+        background: ${theme.controlBgColor};
       }
 
-      .${className} input[type=range]:focus::-ms-fill-lower {
-        background: ${ CONTROL_BG_COLOR };
+      .${className}__field--slider input[type=range]:focus::-ms-fill-lower {
+        background: ${ theme.controlBgColor };
         ${FOCUS_BORDER}
       }
 
-      .${className} input[type=range]:focus::-ms-fill-upper {
-        background: ${ CONTROL_BG_COLOR };
+      .${className}__field--slider input[type=range]:focus::-ms-fill-upper {
+        background: ${ theme.controlBgColor };
         ${FOCUS_BORDER}
       }
 
-      .${className} input[type=range] {
-        -webkit-appearance: none;
-        margin: 0;
-      }
-
-      .${className} input[type=range]:focus {
-        ${FOCUS_BORDER}
-      }
-
-      .${className} input[type=range]::-webkit-slider-runnable-track {
-        height: ${SLIDER_HEIGHT};
-        cursor: ew-resize;
-        background: ${ CONTROL_BG_COLOR };
-      }
     `);
   }
 
@@ -712,6 +746,6 @@ function createGui (state, opts) {
     state: state.$field.value,
   }), opts.root || document.body);
 
-  return state.$field.value;
+  return state;
 }
 
