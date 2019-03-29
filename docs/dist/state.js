@@ -793,7 +793,7 @@ function Section(name, inputFields, config, parentField) {
     var field = displayFields[fieldName] = constructField(fieldName, inputFields[fieldName], _this);
     var config = field.$config;
 
-    if (field.type === 'raw') {
+    if (field.type === 'raw' || field.type === 'button') {
 
       var enumerable = config.enumerable === undefined ? false : !!config.enumerable;
 
@@ -962,6 +962,6 @@ Controls.Raw = function (value, opts) {
   return new raw(null, value, opts);
 };
 
-var controlPanel2Orig = Controls;
+var controlPanel2 = Controls;
 
-module.exports = controlPanel2Orig;
+module.exports = controlPanel2;

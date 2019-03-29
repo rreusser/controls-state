@@ -797,7 +797,7 @@
 	    var field = displayFields[fieldName] = constructField(fieldName, inputFields[fieldName], _this);
 	    var config = field.$config;
 
-	    if (field.type === 'raw') {
+	    if (field.type === 'raw' || field.type === 'button') {
 
 	      var enumerable = config.enumerable === undefined ? false : !!config.enumerable;
 
@@ -966,8 +966,8 @@
 	  return new raw(null, value, opts);
 	};
 
-	var controlPanel2Orig = Controls;
+	var controlPanel2 = Controls;
 
-	return controlPanel2Orig;
+	return controlPanel2;
 
 }));
