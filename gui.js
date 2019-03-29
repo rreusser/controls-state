@@ -104,25 +104,29 @@ function createGui (state, opts) {
     render: function () {
       var field = this.props.field;
       var config = field.$config;
-      return h('label', {
+      return h('div', {
         className: `${className}__field ${className}__field--select`,
-        htmlFor: `${className}-${field.path}`
       },
-        h('span', {
-          className: `${className}__labelText`,
-        }, config.label || field.name),
-        h('span', {className: `${className}__container`},
-          h('select', {
-            name: field.path,
-            id: `${className}-${field.path}`,
-            onChange: event => this.props.field.value = event.target.value,
-          }, field.options.map(option =>
-            h('option', {
-              value: option,
-              selected: option === field.value
-            }, option)
-          ))
-        ),
+        h('label', {
+          className: `${className}__label`,
+          htmlFor: `${className}-${field.path}`
+        },
+          h('span', {
+            className: `${className}__labelText`,
+          }, config.label || field.name),
+          h('span', {className: `${className}__container`},
+            h('select', {
+              name: field.path,
+              id: `${className}-${field.path}`,
+              onChange: event => this.props.field.value = event.target.value,
+            }, field.options.map(option =>
+              h('option', {
+                value: option,
+                selected: option === field.value
+              }, option)
+            ))
+          ),
+        )
       );
     }
   });
@@ -131,22 +135,26 @@ function createGui (state, opts) {
     render: function () {
       var field = this.props.field;
       var config = field.$config;
-      return h('label', {
+      return h('div', {
         className: `${className}__field ${className}__field--text`,
-        htmlFor: `${className}-${field.path}`
       },
-        h('span', {
-          className: `${className}__labelText`,
-        }, config.label || field.name),
-        ' ',
-        h('span', {className: `${className}__container`},
-          h('input', {
-            id: `${className}-${field.path}`,
-            name: field.path,
-            type: 'text',
-            value: field.value,
-            onInput: event => this.props.field.value = event.target.value,
-          })
+        h('label', {
+          className: `${className}__label`,
+          htmlFor: `${className}-${field.path}`
+        },
+          h('span', {
+            className: `${className}__labelText`,
+          }, config.label || field.name),
+          ' ',
+          h('span', {className: `${className}__container`},
+            h('input', {
+              id: `${className}-${field.path}`,
+              name: field.path,
+              type: 'text',
+              value: field.value,
+              onInput: event => this.props.field.value = event.target.value,
+            })
+          )
         )
       );
     }
@@ -156,23 +164,27 @@ function createGui (state, opts) {
     render: function () {
       var field = this.props.field;
       var config = field.$config;
-      return h('label', {
+      return h('div', {
         className: `${className}__field ${className}__field--checkbox`,
-        htmlFor: `${className}-${field.path}`,
       },
-        h('span', {
-          className: `${className}__labelText`,
-        }, config.label || field.name),
-        ' ',
-        h('span', {className: `${className}__container`},
-          h('input', {
-            id: `${className}-${field.path}`,
-            name: field.path,
-            type: 'checkbox',
-            checked: field.value,
-            onInput: event => this.props.field.value = event.target.checked,
-          })
-        ),
+        h('label', {
+          className: `${className}__label`,
+          htmlFor: `${className}-${field.path}`,
+        },
+          h('span', {
+            className: `${className}__labelText`,
+          }, config.label || field.name),
+          ' ',
+          h('span', {className: `${className}__container`},
+            h('input', {
+              id: `${className}-${field.path}`,
+              name: field.path,
+              type: 'checkbox',
+              checked: field.value,
+              onInput: event => this.props.field.value = event.target.checked,
+            })
+          ),
+        )
       );
     }
   });
@@ -195,25 +207,29 @@ function createGui (state, opts) {
     render: function () {
       var field = this.props.field;
       var config = field.$config;
-      return h('label', {
+      return h('div', {
         className: `${className}__field ${className}__field--color`,
-        htmlFor: `${className}-${field.path}`
       },
-        h('span', {
-          className: `${className}__labelText`,
-        }, config.label || field.name),
-        ' ',
-        h('span', {className: `${className}__container`},
-          h('input', {
-            id: `${className}-${field.path}`,
-            name: field.path,
-            type: 'color',
-            value: field.value,
-            onInput: event => {
-              this.props.field.value = event.target.value;
-            }
-          })
-        ),
+        h('label', {
+          className: `${className}__label`,
+          htmlFor: `${className}-${field.path}`
+        },
+          h('span', {
+            className: `${className}__labelText`,
+          }, config.label || field.name),
+          ' ',
+          h('span', {className: `${className}__container`},
+            h('input', {
+              id: `${className}-${field.path}`,
+              name: field.path,
+              type: 'color',
+              value: field.value,
+              onInput: event => {
+                this.props.field.value = event.target.value;
+              }
+            })
+          ),
+        )
       );
     }
   });
@@ -222,26 +238,30 @@ function createGui (state, opts) {
     render: function () {
       var field = this.props.field;
       var config = field.$config;
-      return h('label', {
+      return h('div', {
         className: `${className}__field ${className}__field--slider`,
-        htmlFor: `${className}-${field.path}`
       },
-        h('span', {
-          className: `${className}__labelText`,
-        }, config.label || field.name),
-        ' ',
-        h('span', {className: `${className}__container`},
-          h('input', {
-            id: `${className}-${field.path}`,
-            name: field.path,
-            type: 'range',
-            min: field.min,
-            max: field.max,
-            step: field.step,
-            value: field.value,
-            onInput: event => this.props.field.value = parseFloat(event.target.value)
-          }),
-          h('span', {className: `${className}__value`}, field.value.toFixed(4).replace(/\.?0*$/,'')) )
+        h('label', {
+          className: `${className}__label`,
+          htmlFor: `${className}-${field.path}`
+        },
+          h('span', {
+            className: `${className}__labelText`,
+          }, config.label || field.name),
+          ' ',
+          h('span', {className: `${className}__container`},
+            h('input', {
+              id: `${className}-${field.path}`,
+              name: field.path,
+              type: 'range',
+              min: field.min,
+              max: field.max,
+              step: field.step,
+              value: field.value,
+              onInput: event => this.props.field.value = parseFloat(event.target.value)
+            }),
+            h('span', {className: `${className}__value`}, field.value.toFixed(4).replace(/\.?0*$/,'')) )
+        )
       );
     }
   });
@@ -387,8 +407,13 @@ function createGui (state, opts) {
       }
 
       .${className}__field {
-        border-right: 1px solid ${theme.fieldBorderColor};
         position: relative;
+        background-color: ${theme.fieldBgColor};
+        border-right: 1px solid ${theme.fieldBorderColor};
+      }
+
+      .${className}__label {
+        display: block;
         height: 30px;
         line-height: 31px;
         display: flex;
@@ -464,6 +489,7 @@ function createGui (state, opts) {
       }
 
       .${className}__field--button button {
+        height: 30px;
         font-family: inherit;
         outline: none;
         cursor: pointer;
@@ -556,7 +582,7 @@ function createGui (state, opts) {
         line-height: 31px;
       }
 
-      .${className} label::before,
+      .${className}__field::before,
       .${className}__field--button > button::before,
       .${className}__rawContent::before {
         content: '';
