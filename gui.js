@@ -27,6 +27,7 @@ function createGui (state, opts) {
     fieldHoverColor: '#383838',
     fieldActiveColor: '#383838',
     fieldBorderColor: '#232323',
+    fieldHeight: 30,
     sectionHeadingBgColor: '#222',
     sectionHeadingHoverColor: '#444',
     sectionHeadingColor: '#e8e8e8',
@@ -46,6 +47,7 @@ function createGui (state, opts) {
 
   theme.fontSize = toPx(theme.fontSize);
   theme.sliderHeight = toPx(theme.sliderHeight);
+  theme.fieldHeight = toPx(theme.fieldHeight);
   theme.sectionHeadingHeight = toPx(theme.sectionHeadingHeight);
   theme.minLabelWidth = toPx(theme.minLabelWidth);
   theme.minControlWidth = toPx(theme.minControlWidth);
@@ -415,8 +417,8 @@ function createGui (state, opts) {
 
       .${className}__label {
         display: block;
-        height: 30px;
-        line-height: 31px;
+        height: ${theme.fieldHeight};
+        line-height: ${theme.fieldHeight};
         display: flex;
         flex-direction: row;
         background-color: ${theme.fieldBgColor};
@@ -458,14 +460,14 @@ function createGui (state, opts) {
         align-content: stretch;
         justify-content: stretch;
       
-        height: 30px;
+        height: ${theme.fieldHeight};
         flex: 1;
         position: relative;
         align-items: center;
         position: relative;
 
         min-width: ${theme.minControlWidth};
-        width: 30px;
+        width: ${theme.fieldHeight};
         padding-right: 8px;
         text-indent: 8px;
       }
@@ -475,8 +477,8 @@ function createGui (state, opts) {
         pointer-events: none;
         top: 0;
         z-index: 11;
-        line-height: 31px;
-        height: 30px;
+        line-height: ${theme.fieldHeight};
+        height: ${theme.fieldHeight};
         display: inline-block;
         right: 15px;
         text-shadow:  1px  0   ${theme.visibilityFontColor},
@@ -490,7 +492,7 @@ function createGui (state, opts) {
       }
 
       .${className}__field--button button {
-        height: 30px;
+        height: ${theme.fieldHeight};
         font-family: inherit;
         outline: none;
         cursor: pointer;
@@ -580,7 +582,7 @@ function createGui (state, opts) {
         margin-right: 4px;
         display: inline-block;
         min-width: ${theme.minLabelWidth};
-        line-height: 31px;
+        line-height: ${theme.fieldHeight};
       }
 
       .${className}__field::before,
@@ -625,6 +627,7 @@ function createGui (state, opts) {
       }
 
       .${className}__field--text input[type=text] {
+        font-family: inherit;
         width: 100%;
         margin: 0;
         padding: 0 5px;
