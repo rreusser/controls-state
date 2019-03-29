@@ -12,7 +12,6 @@ function toPx (number) {
 }
 
 function createGui (state, opts) {
-  console.log('toPx(2):', toPx('2px'));
   opts = defaults(opts || {}, {
     containerCSS: "position:fixed;top:0;right:8px",
     style: true,
@@ -345,7 +344,7 @@ function createGui (state, opts) {
       .${className} {
         color: ${theme.fontColor};
         ${theme.fontSize ? `font-size: ${theme.fontSize}` : ''};
-        ${opts.theme.fontFamily ? `font-family: ${opts.theme.fontFamily}` : ''};
+        ${theme.fontFamily ? `font-family: ${theme.fontFamily}` : ''};
       }
 
       .${className} > .${className}__section:first-child > .${className}__sectionHeading:first-child {
@@ -598,7 +597,7 @@ function createGui (state, opts) {
         background-color: #8ff;
       }
 
-      .${className}__field input[type="text"] {
+      .${className}__field--text input[type=text] {
         width: 100%;
         margin: 0;
         padding: 0 5px;
@@ -610,14 +609,14 @@ function createGui (state, opts) {
         color: inherit;
       }
 
-      .${className}__field input[type="checkbox"]:focus,
-      .${className}__field input[type="text"]:focus,
-      .${className}__field input[type="color"]:focus,
+      .${className}__field--checkbox input[type=checkbox]:focus,
+      .${className}__field--text input[type=text]:focus,
+      .${className}__field--color input[type=color]:focus,
       .${className} select:focus {
         ${FOCUS_BORDER}
       }
 
-      .${className}__field input[type="color"] {
+      .${className}__field--color input[type=color] {
         margin: 0;
         border: 1px solid #aaa;
         width: 50px;
@@ -626,23 +625,23 @@ function createGui (state, opts) {
         padding: 0;
       }
 
-      .${className}__field input[type="color"]::-webkit-color-swatch-wrapper {
+      .${className}__field--color input[type=color]::-webkit-color-swatch-wrapper {
         padding: 0px;
         background-color: #888;
       }
 
-      .${className}__field input[type="checkbox"] {
+      .${className}__field--checkbox input[type=checkbox] {
         height: 20px;
         width: 20px;
         margin-bottom: 0.2em;
       }
 
-      .${className}__field--slider input[type="range"] {
+      .${className}__field--slider input[type=range] {
         cursor: resize-ew;
         border: 1px solid ${theme.controlBorderColor};
       }
 
-      .${className} select {
+      .${className}__field--select select {
         height: ${theme.sliderHeight};
         width: 100%;
         color: inherit;
