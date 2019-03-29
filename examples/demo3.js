@@ -246,7 +246,7 @@ var controls = window.controls = Controls(
 )
 
 var gui1 = wrapGui(controls, {
-  containerCSS: "position:fixed;top:0;right:8px",
+  containerCSS: "position:fixed;top:0;right:8px;max-width:300px",
   theme: {
     fontFamily: `${FONT_FAMILY}, Helvetica, sans-serif`,
     fontColor: 'black',

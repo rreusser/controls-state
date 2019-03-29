@@ -519,11 +519,11 @@ function createGui (state, opts) {
       }
 
       .${className}__field--raw {
-        padding: 5px 10px;
+        padding: 5px 7px 5px 10px;
       }
 
       .${className}__rawContent {
-        max-width: calc(${theme.minControlWidth} + ${theme.minLabelWidth} + 10px);
+        max-width: 100%;
         margin: 0;
         padding: 0;
       }
