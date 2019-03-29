@@ -251,7 +251,7 @@ var gui1 = wrapGui(controls, {
     fontFamily: `${FONT_FAMILY}, Helvetica, serif`,
     fontColor: 'black',
     controlBgColor: 'white',
-    controlBorderRadius: 2,
+    controlBorderRadius: '2px',
     controlBorderColor: '#aaa',
     fieldBgColor: 'white',
     fieldHoverColor: '#f8f8f8',

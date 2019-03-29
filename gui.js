@@ -8,10 +8,11 @@ module.exports = createGui;
 
 function toPx (number) {
   number = '' + number;
-  return /[0-9\.]*/.test(number) ? number + 'px' : number;
+  return /^[0-9\.\s]*$/.test(number) ? number + 'px' : number;
 }
 
 function createGui (state, opts) {
+  console.log('toPx(2):', toPx('2px'));
   opts = defaults(opts || {}, {
     containerCSS: "position:fixed;top:0;right:8px",
     style: true,
