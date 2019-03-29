@@ -401,6 +401,7 @@ function createGui (state, opts) {
         text-align: left;
         outline: none;
         color: inherit;
+        font-size: inherit;
         font-family: inherit;
         background: transparent;
         border: none;
@@ -493,6 +494,7 @@ function createGui (state, opts) {
 
       .${className}__field--button button {
         height: ${theme.fieldHeight};
+        font-size: inherit;
         font-family: inherit;
         outline: none;
         cursor: pointer;
@@ -627,6 +629,7 @@ function createGui (state, opts) {
       }
 
       .${className}__field--text input[type=text] {
+        font-size: inherit;
         font-family: inherit;
         width: 100%;
         margin: 0;
@@ -672,6 +675,8 @@ function createGui (state, opts) {
       }
 
       .${className}__field--select select {
+        font-family: inherit;
+        font-size: inherit;
         height: ${theme.sliderHeight};
         width: 100%;
         color: inherit;
