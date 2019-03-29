@@ -962,6 +962,6 @@ Controls.Raw = function (value, opts) {
   return new raw(null, value, opts);
 };
 
-var controlPanel2Orig = Controls;
+var controlPanel2 = Controls;
 
-module.exports = controlPanel2Orig;
+module.exports = controlPanel2;

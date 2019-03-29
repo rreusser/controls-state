@@ -42,7 +42,7 @@
     "global": "^4.3.2",
     "insert-css": "^2.0.0",
     "preact-classless-component": "^1.1.1",
-    "raf": "^3.4.0",
+    "raf": "^3.4.1",
     "rangetouch": "^1.0.5"
   }
 }

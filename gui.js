@@ -303,10 +303,25 @@ function createGui (state, opts) {
       }
 
       .${className}__sectionHeading {
+        padding: 0;
         font-family: inherit;
+        user-select: none;
+        -moz-user-select: -moz-none;
+        text-indent: 5px;
+        cursor: pointer;
+        width: 100%;
+
+        background-color: ${SECTION_HEADING_BG_COLOR};
+        height: ${SECTION_HEADING_HEIGHT};
+        line-height: ${SECTION_HEADING_HEIGHT};
+      }
+
+      .${className}__sectionHeading button:focus {
+        background-color: ${SECTION_HEADING_HOVER_COLOR};
       }
 
       .${className}__sectionHeading > button {
+        height: ${SECTION_HEADING_HEIGHT};
         vertical-align: middle;
         font-size: 1.0em;
         cursor: pointer;
@@ -454,23 +469,13 @@ function createGui (state, opts) {
         margin-bottom: 5px;
       }
 
-      .${className}__sectionHeading {
-        margin-left: -4px;
-        user-select: none;
-        text-indent: 5px;
-        cursor: pointer;
-        width: 100%;
-        display: flex;
-
-        background-color: ${SECTION_HEADING_BG_COLOR};
-        height: ${SECTION_HEADING_HEIGHT};
-        line-height: ${SECTION_HEADING_HEIGHT};
-      }
-
       .${className}__section {
         margin: 0;
         padding: 0;
         border: none;
+      }
+
+      .${className}__sectionFields {
         margin-left: 4px;
       }
 
@@ -480,6 +485,7 @@ function createGui (state, opts) {
 
       .${className} label {
         user-select: none;
+        -moz-user-select: -moz-none;
         text-indent: 8px;
         margin-right: 4px;
         display: inline-block;
@@ -572,21 +578,31 @@ function createGui (state, opts) {
         border: 1px solid ${CONTROL_BORDER_COLOR};
       }
 
-      .${className} input,
       .${className} select {
-        width: 100%;
-        margin: .4rem;
-      }
-
-      .${className} select {
-        background-color: ${CONTROL_BG_COLOR};
-        color: inherit;
-        border: 1px solid ${CONTROL_BORDER_COLOR};
         height: ${SLIDER_HEIGHT};
+        width: 100%;
+        color: inherit;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        appearance: none;
+        background-color: ${CONTROL_BG_COLOR};
+        border: 1px solid ${CONTROL_BORDER_COLOR};
+        outline: none;
         margin: 0;
+        padding: 0 5px;
+        border-radius: 0;
+        background-image: linear-gradient(${CONTROL_BORDER_COLOR}, ${CONTROL_BORDER_COLOR}),
+          linear-gradient(-130deg, transparent 50%, ${CONTROL_BG_COLOR} 52%),
+          linear-gradient(-230deg, transparent 50%, ${CONTROL_BG_COLOR} 52%),
+          linear-gradient(${TEXT_COLOR} 42%, ${CONTROL_BG_COLOR} 42%);
+        background-repeat: no-repeat, no-repeat, no-repeat, no-repeat;
+        background-size: 1px 100%, 20px 16px, 20px 16px, 20px 60%;
+        background-position: right 20px center, right bottom, right bottom, right bottom;
       }
 
       .${className} input[type=range] {
+        width: 100%;
+        height: ${SLIDER_HEIGHT};
         -webkit-appearance: none;
         vertical-align: middle;
         border-radius: 2px;
@@ -602,10 +618,27 @@ function createGui (state, opts) {
         height: ${SLIDER_HEIGHT};
         width: ${SLIDER_HEIGHT};
         background: ${THUMB_COLOR};
+        border-radius: 0;
         cursor: ew-resize;
         -webkit-appearance: none;
-        margin-top: 0px;
       }
+
+      .${className} input[type=range]::-moz-range-thumb {
+        height: ${SLIDER_HEIGHT};
+        width: ${SLIDER_HEIGHT};
+        border-radius: 0;
+        background: ${THUMB_COLOR};
+        cursor: ew-resize;
+      }
+
+      .${className} input[type=range]::-ms-thumb {
+        height: ${SLIDER_HEIGHT};
+        width: ${SLIDER_HEIGHT};
+        border-radius: 0;
+        background: ${THUMB_COLOR};
+        cursor: ew-resize;
+      }
+
 
       .${className} input[type=range]:focus::-webkit-slider-runnable-track {
         background: ${ CONTROL_BG_COLOR };
@@ -615,14 +648,7 @@ function createGui (state, opts) {
       .${className} input[type=range]::-moz-range-track {
         height: ${SLIDER_HEIGHT};
         cursor: ew-resize;
-        background: ${ CONTROL_BG_COLOR };
-      }
-
-      .${className} input[type=range]::-moz-range-thumb {
-        height: ${SLIDER_HEIGHT};
-        width: 10px;
-        background: ${THUMB_COLOR};
-        cursor: ew-resize;
+        background: ${CONTROL_BG_COLOR};
       }
 
       .${className} input[type=range]::-ms-track {
@@ -634,19 +660,11 @@ function createGui (state, opts) {
       }
 
       .${className} input[type=range]::-ms-fill-lower {
-        background: ${ CONTROL_BG_COLOR };
+        background: ${CONTROL_BG_COLOR};
       }
 
       .${className} input[type=range]::-ms-fill-upper {
-        background: ${ CONTROL_BG_COLOR };
-      }
-
-      .${className} input[type=range]::-ms-thumb {
-        width: 10px;
-        border-radius: 0;
-        background: ${THUMB_COLOR};
-        cursor: ew-resize;
-        height: ${SLIDER_HEIGHT};
+        background: ${CONTROL_BG_COLOR};
       }
 
       .${className} input[type=range]:focus::-ms-fill-lower {

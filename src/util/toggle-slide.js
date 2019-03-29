@@ -23,7 +23,7 @@ module.exports = function toggleSlide (el, callback) {
 
     setTimeout(function() {
       el.style.maxHeight = maxComputedHeight;
-    }, 10);
+    }, 20);
   } else {
     var maxComputedHeight = getElementHeight(el) + 'px';
 
@@ -41,6 +41,6 @@ module.exports = function toggleSlide (el, callback) {
 
     setTimeout(function() {
       el.style.maxHeight = '0';
-    }, 10);
+    }, 20);
   }
 }

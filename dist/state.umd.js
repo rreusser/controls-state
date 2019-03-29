@@ -966,8 +966,8 @@
 	  return new raw(null, value, opts);
 	};
 
-	var controlPanel2Orig = Controls;
+	var controlPanel2 = Controls;
 
-	return controlPanel2Orig;
+	return controlPanel2;
 
 }));
