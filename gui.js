@@ -64,11 +64,13 @@ function createGui (state, opts) {
     render: function () {
       var field = this.props.field;
       var config = field.$config;
-      return h('div', {
-        className: `${className}__field ${className}__field--select`
+      return h('label', {
+        className: `${className}__field ${className}__field--select`,
+        htmlFor: `${className}-${field.path}`
       },
-        h('label', {htmlFor: `${className}-${field.path}`}, h('span', null, config.label || field.name)),
-        ' ',
+        h('span', {
+          className: `${className}__labelText`,
+        }, config.label || field.name),
         h('span', {className: `${className}__container`},
           h('select', {
             name: field.path,
@@ -89,10 +91,13 @@ function createGui (state, opts) {
     render: function () {
       var field = this.props.field;
       var config = field.$config;
-      return h('div', {
-        className: `${className}__field ${className}__field--text`
+      return h('label', {
+        className: `${className}__field ${className}__field--text`,
+        htmlFor: `${className}-${field.path}`
       },
-        h('label', {htmlFor: `${className}-${field.path}`}, h('span', null, config.label || field.name)),
+        h('span', {
+          className: `${className}__labelText`,
+        }, config.label || field.name),
         ' ',
         h('span', {className: `${className}__container`},
           h('input', {
@@ -111,10 +116,13 @@ function createGui (state, opts) {
     render: function () {
       var field = this.props.field;
       var config = field.$config;
-      return h('div', {
-        className: `${className}__field ${className}__field--checkbox`
+      return h('label', {
+        className: `${className}__field ${className}__field--checkbox`,
+        htmlFor: `${className}-${field.path}`,
       },
-        h('label', {htmlFor: `${className}-${field.path}`}, h('span', null, config.label || field.name)),
+        h('span', {
+          className: `${className}__labelText`,
+        }, config.label || field.name),
         ' ',
         h('span', {className: `${className}__container`},
           h('input', {
@@ -147,10 +155,13 @@ function createGui (state, opts) {
     render: function () {
       var field = this.props.field;
       var config = field.$config;
-      return h('div', {
-        className: `${className}__field ${className}__field--color`
+      return h('label', {
+        className: `${className}__field ${className}__field--color`,
+        htmlFor: `${className}-${field.path}`
       },
-        h('label', {htmlFor: `${className}-${field.path}`}, h('span', null, config.label || field.name)),
+        h('span', {
+          className: `${className}__labelText`,
+        }, config.label || field.name),
         ' ',
         h('span', {className: `${className}__container`},
           h('input', {
@@ -171,10 +182,13 @@ function createGui (state, opts) {
     render: function () {
       var field = this.props.field;
       var config = field.$config;
-      return h('div', {
-        className: `${className}__field ${className}__field--slider`
+      return h('label', {
+        className: `${className}__field ${className}__field--slider`,
+        htmlFor: `${className}-${field.path}`
       },
-        h('label', {htmlFor: `${className}-${field.path}`}, h('span', null, config.label || field.name)),
+        h('span', {
+          className: `${className}__labelText`,
+        }, config.label || field.name),
         ' ',
         h('span', {className: `${className}__container`},
           h('input', {
@@ -483,7 +497,7 @@ function createGui (state, opts) {
         line-height: 1.8;
       }
 
-      .${className} label {
+      .${className}__labelText {
         user-select: none;
         -moz-user-select: -moz-none;
         text-indent: 8px;
@@ -498,7 +512,6 @@ function createGui (state, opts) {
       .${className}__rawContent::before {
         content: '';
         width: 3px;
-        background-color: red;
         display: inline-block;
         vertical-align: middle;
         position: absolute;
@@ -507,23 +520,23 @@ function createGui (state, opts) {
         bottom: 0;
       }
 
-      .${className}__field--text label::before {
+      .${className}__field--text::before {
         background-color: #49f;
       }
 
-      .${className}__field--color label::before {
+      .${className}__field--color::before {
         background-color: #94f;
       }
 
-      .${className}__field--checkbox label::before {
+      .${className}__field--checkbox::before {
         background-color: #f49;
       }
 
-      .${className}__field--slider label::before {
+      .${className}__field--slider::before {
         background-color: #f84;
       }
 
-      .${className}__field--select label::before {
+      .${className}__field--select::before {
         background-color: #8f4;
       }
 
@@ -536,6 +549,7 @@ function createGui (state, opts) {
       }
 
       .${className}__field input[type="text"] {
+        width: 100%;
         margin: 0;
         padding: 0 5px;
         border: none;
@@ -556,7 +570,7 @@ function createGui (state, opts) {
       .${className}__field input[type="color"] {
         margin: 0;
         border: 1px solid #aaa;
-        width: ${SLIDER_HEIGHT};
+        width: 50px;
         height: ${SLIDER_HEIGHT};
         border-radius: 2px;
         padding: 0;
