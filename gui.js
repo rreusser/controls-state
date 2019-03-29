@@ -114,6 +114,7 @@ function createGui (state, opts) {
           h('span', {
             className: `${className}__labelText`,
           }, config.label || field.name),
+          ' ',
           h('span', {className: `${className}__container`},
             h('select', {
               name: field.path,

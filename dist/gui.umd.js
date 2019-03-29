@@ -1193,7 +1193,7 @@
 	        htmlFor: className + '-' + field.path
 	      }, h('span', {
 	        className: className + '__labelText'
-	      }, config.label || field.name), h('span', { className: className + '__container' }, h('select', {
+	      }, config.label || field.name), ' ', h('span', { className: className + '__container' }, h('select', {
 	        name: field.path,
 	        id: className + '-' + field.path,
 	        onChange: function (event) {
