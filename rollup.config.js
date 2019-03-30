@@ -8,24 +8,8 @@ export default [
   {
     input: 'index.js',
     output: 'dist/state.js',
-    format: 'cjs',
-  },
-  {
-    input: 'gui.js',
-    output: 'dist/gui.js',
-    format: 'cjs',
-  },
-  {
-    input: 'index.js',
-    output: 'dist/state.umd.js',
     format: 'umd',
     name: 'ControlPanelState',
-  },
-  {
-    input: 'gui.js',
-    output: 'dist/gui.umd.js',
-    format: 'umd',
-    name: 'ControlPanelGUI',
   },
 ].map(bundle => ({
   input: bundle.input,

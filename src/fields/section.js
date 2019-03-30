@@ -1,56 +1,16 @@
 'use strict';
 
-var global = require('global');
+var Raw = require('../fields/raw');
+var Field = require('../field');
+var Slider = require('../fields/slider');
+var Button = require('../fields/button');
+var TextInput = require('../fields/textinput');
+var Color = require('../fields/color');
+var Checkbox = require('../fields/checkbox');
+
+var inferType = require('../infer-type');
 
 module.exports = Section;
-
-var COLOR_REGEX = /(#(?:[0-9a-fA-F]{2,4}){2,4}|(#[0-9a-fA-F]{3})|(rgb|hsl)a?((-?\d+%?[,\s]+){2,3}\s*[\d.]+%?))/;
-
-function isHTMLElement(element) {
-  return (global.Element && element instanceof global.Element) ||
-    (global.HTMLDocument && element instanceof global.HTMLDocument);
-}
-
-function inferType (value) {
-  if (value && value.type) {
-    return value.type + 'field';
-  }
-
-  if (isHTMLElement(value)) {
-    return 'rawfield';
-  }
-
-  if (typeof value === 'function') {
-    return 'button';
-  }
-
-  switch (typeof value) {
-    case 'string':
-      if (COLOR_REGEX.test(value)) {
-        return 'color';
-      }
-      return 'textinput';
-    case 'number':
-      return 'number';
-    case 'boolean':
-      return 'boolean';
-    case 'raw':
-      return 'raw';
-    case 'button':
-      return 'button';
-    case 'object':
-      return 'object';
-  }
-}
-
-var Raw = require('./raw');
-var Field = require('./field');
-var Slider = require('./slider');
-// var Rangeslider = require('./rangeslider');
-var Button = require('./button');
-var TextInput = require('./textinput');
-var Color = require('./color');
-var Checkbox = require('./checkbox');
 
 function constructField (fieldName, fieldValue, parentField) {
   switch (inferType(fieldValue)) {
@@ -66,9 +26,6 @@ function constructField (fieldName, fieldValue, parentField) {
       if (fieldValue.path) {
         throw new Error('You may only add an field to a set of controls once.');
       }
-
-      //fieldValue.$field.context = Object.assign(Object.create(parentContext), fieldValue.context);
-      //fieldValue.$field.context.parentContext = parentContext;
 
       fieldValue.$field.parent = parentField;
       fieldValue.name = fieldName;

@@ -1,10 +1,10 @@
 {
-  "name": "control-panel-2",
+  "name": "controls-state",
   "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
+  "description": "An object for managing state",
+  "main": "src/index.js",
   "scripts": {
-    "test": "node test.js",
+    "test": "node test",
     "start": "budo --open --live --host localhost examples/demo3.js",
     "build": "npm run build:rollup",
     "build:example": "rm -rf docs && mkdir -p docs && browserify examples/demo3.js -t es2020 -t [ envify --NODE_ENV production ] | uglifyjs -cm |  indexhtmlify > docs/index.html",

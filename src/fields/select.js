@@ -1,6 +1,6 @@
 'use strict';
 
-var Field = require('./field');
+var Field = require('../field');
 
 module.exports = Select;
 

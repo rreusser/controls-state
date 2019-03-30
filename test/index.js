@@ -1,5 +1,5 @@
 var test = require('tape');
-var Controls = require('./');
+var Controls = require('../');
 var raf = require('raf');
 
 test('controls', function (t) {
