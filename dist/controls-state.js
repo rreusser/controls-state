@@ -886,28 +886,6 @@
 
 	Section.prototype = Object.create(field.prototype);
 
-	var rangeslider = Rangeslider;
-
-	function Rangeslider(name, initialValue, config, parentField) {
-	  if (!(this instanceof Rangeslider)) return new Rangeslider(name, initialValue, config, parentField);
-
-	  initialValue = initialValue === undefined ? 0 : initialValue;
-	  config = config || {};
-
-	  field.call(this, name, initialValue, parentField, config);
-
-	  var min = config.min === undefined ? Math.min(initialValue, 0) : config.min;
-	  var max = config.max === undefined ? Math.max(initialValue, 1) : config.max;
-	  var step = config.step === undefined ? 1 : config.step;
-
-	  this.type = 'rangeslider';
-	  this.min = min;
-	  this.max = max;
-	  this.step = step;
-	}
-
-	Rangeslider.prototype = Object.create(field.prototype);
-
 	var select = Select;
 
 	function Select(name, initialValue, config, parentField) {
@@ -930,10 +908,6 @@
 
 	Controls.Slider = function (value, opts) {
 	  return new slider(null, value, opts);
-	};
-
-	Controls.Rangeslider = function (value, opts) {
-	  return new rangeslider(null, value, opts);
 	};
 
 	Controls.Textinput = function (value, opts) {
