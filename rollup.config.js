@@ -6,10 +6,10 @@ import es2020 from 'es2020'
 
 export default [
   {
-    input: 'index.js',
-    output: 'dist/state.js',
+    input: 'src/index.js',
+    output: 'dist/controls-state.js',
     format: 'umd',
-    name: 'ControlPanelState',
+    name: 'ControlsState',
   },
 ].map(bundle => ({
   input: bundle.input,

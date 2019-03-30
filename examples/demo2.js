@@ -1,11 +1,12 @@
-var controls = require('../index');
+//var State = require('../src/index');
+var State = require('../dist/controls-state.min.js');
 
-var state = controls({
+var state = new State({
   // It can try to infer types:
   background: '#ff0000',
 
   // You can instantiate controls manually to provide more configuration
-  alpha: controls.Slider(0.5, {min: 0, max: 1, step: 0.01}),
+  alpha: State.Slider(0.5, {min: 0, max: 1, step: 0.01}),
 
   // Objects result in nested sections:
   shape: {
