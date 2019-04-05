@@ -1,6 +1,7 @@
 'use strict';
 
 var Section = require('./fields/section');
+var Tabs = require('./fields/tabs');
 var Checkbox = require('./fields/checkbox');
 var Raw = require('./fields/raw');
 var Slider = require('./fields/slider');
@@ -34,6 +35,10 @@ Controls.Color = function (value, opts) {
 
 Controls.Section = function (value, opts) {
   return new Section(null, value, opts);
+};
+
+Controls.Tabs = function (value, opts) {
+  return new Tabs(null, value, opts);
 };
 
 Controls.Raw = function (value, opts) {

@@ -162,7 +162,6 @@ test('controls', function (t) {
       t.end();
     });
 
-    /*
     t.test('accepts event handlers on instantiated components', function (t) {
       t.test('emits nested change events', function (t) {
         var c = Controls({
@@ -179,13 +178,13 @@ test('controls', function (t) {
 
         c.shape.width = 240;
 
-        raf(function () {
+        // Seems This must be delayed *two* ticks in order to happen after onChanges fires
+        raf(() => raf(() => {
           t.equal(called, true);
           t.end();
-        });
+        }));
       });
     });
-    */
 
     t.test('emits onChange events', function (t) {
       var c = Controls({foo: 5});

@@ -23,6 +23,7 @@ function constructField (fieldName, fieldValue, parentField) {
     case 'rangesliderfield':
     case 'checkboxfield':
     case 'sectionfield':
+    case 'tabsfield':
       if (fieldValue.path) {
         throw new Error('You may only add an field to a set of controls once.');
       }
@@ -98,7 +99,7 @@ function Section (name, inputFields, config, parentField) {
         enumerable: enumerable,
         get: function () { return field; }
       });
-    } else if (field.type === 'section') {
+    } else if (field.type === 'section' || field.type === 'tabs') {
       fields[fieldName] = field;
 
       var enumerable = config.enumerable === undefined ? true : !!config.enumerable;

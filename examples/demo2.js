@@ -1,7 +1,7 @@
 //var State = require('../src/index');
-var State = require('../dist/controls-state.min.js');
+var State = window.State = require('../dist/controls-state.min.js');
 
-var state = new State({
+var state = window.state = new State({
   // It can try to infer types:
   background: '#ff0000',
 
