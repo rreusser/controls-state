@@ -728,6 +728,7 @@
 	    case 'rangesliderfield':
 	    case 'checkboxfield':
 	    case 'sectionfield':
+	    case 'tabsfield':
 	      if (fieldValue.path) {
 	        throw new Error('You may only add an field to a set of controls once.');
 	      }
@@ -808,7 +809,7 @@
 	          return field;
 	        }
 	      });
-	    } else if (field.type === 'section') {
+	    } else if (field.type === 'section' || field.type === 'tabs') {
 
 	      var enumerable = config.enumerable === undefined ? true : !!config.enumerable;
 
@@ -886,6 +887,14 @@
 
 	Section.prototype = Object.create(field.prototype);
 
+	var tabs = function Tabs(name, inputFields, config, parentField) {
+	  var section$1 = new section(name, inputFields, config, parentField);
+
+	  section$1.type = 'tabs';
+
+	  return section$1;
+	};
+
 	var select = Select;
 
 	function Select(name, initialValue, config, parentField) {
@@ -928,6 +937,10 @@
 
 	Controls.Section = function (value, opts) {
 	  return new section(null, value, opts);
+	};
+
+	Controls.Tabs = function (value, opts) {
+	  return new tabs(null, value, opts);
 	};
 
 	Controls.Raw = function (value, opts) {
