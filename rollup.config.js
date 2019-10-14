@@ -9,7 +9,7 @@ export default [
     input: 'src/index.js',
     output: 'dist/controls-state.js',
     format: 'umd',
-    name: 'ControlsState',
+    name: 'State',
   },
 ].map(bundle => ({
   input: bundle.input,
