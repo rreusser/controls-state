@@ -344,7 +344,7 @@ test('controls', function (t) {
       t.equal(slider.type, 'slider');
       t.equal(slider.value, 5);
       t.equal(slider.min, 0);
-      t.equal(slider.max, 5);
+      t.equal(slider.max, 10);
       t.equal(slider.step, 1);
 
       t.end();
@@ -357,7 +357,7 @@ test('controls', function (t) {
       t.equal(slider.value, 0);
       t.equal(slider.min, 0);
       t.equal(slider.max, 1);
-      t.equal(slider.step, 1);
+      t.equal(slider.step, 0.01);
 
       t.end();
     });
