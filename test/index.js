@@ -373,35 +373,6 @@ test('controls', function (t) {
       t.end();
     });
 
-
-    // t.test('mapping function from slider', function (t) {
-    //   var slider = Controls.Slider(5, {
-    //     mapping: x => Math.log(x),
-    //   });
-
-    //   t.equal(slider.type, 'slider');
-    //   t.equal(slider.min, 0);
-    //   t.equal(slider.max, 1);
-    //   t.equal(slider.step, 0.01);
-
-    //   t.end();
-    // });
-
-
-    // t.test('inverse mapping funcion when setting a value', function (t) {
-    //   var slider = Controls.Slider(5, {
-    //     inverseMapping: x => Math.exp(x),
-    //   });
-
-    //   t.equal(slider.type, 'slider');
-    //   t.equal(slider.value, Math.exp(5));
-    //   t.equal(slider.min, Math.exp(0));
-    //   t.equal(slider.max, Math.exp(10));
-    //   t.equal(slider.step, 0.01);
-
-    //   t.end();
-    // });
-
     t.test('mapping and inverseMapping', function (t) {
       const min = 0.01;
       const max = 100;
