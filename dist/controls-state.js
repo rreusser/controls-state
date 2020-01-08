@@ -589,6 +589,10 @@
 
 	var slider = Slider;
 
+	function identity(x) {
+	  return x;
+	}
+
 	function Slider(name, initialValue, config, parentField) {
 	  if (!(this instanceof Slider)) return new Slider(name, initialValue, config, parentField);
 
@@ -605,10 +609,28 @@
 	  var max = config.max === undefined ? defaultMax : config.max;
 	  var step = config.step === undefined ? defaultStep : config.step;
 
+	  var mapping = typeof config.mapping !== 'function' ? identity : config.mapping;
+	  var inverseMapping = typeof config.inverseMapping !== 'function' ? identity : config.inverseMapping;
+
 	  this.type = 'slider';
 	  this.min = min;
 	  this.max = max;
 	  this.step = step;
+
+	  var field$1 = this;
+	  var fieldGetter = Object.getOwnPropertyDescriptor(field$1, 'value').get;
+	  var fieldSetter = Object.getOwnPropertyDescriptor(field$1, 'value').set;
+
+	  Object.defineProperties(this, {
+	    'valueForSlider': {
+	      get: function () {
+	        return inverseMapping(fieldGetter.call(field$1));
+	      },
+	      set: function (newValue) {
+	        return fieldSetter.call(field$1, mapping(newValue));
+	      }
+	    }
+	  });
 	}
 
 	Slider.prototype = Object.create(field.prototype);
