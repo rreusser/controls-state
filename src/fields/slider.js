@@ -20,32 +20,19 @@ function Slider (name, initialValue, config, parentField) {
   var defaultMin = isValueBetween0and1 ? 0 : Math.min(initialValue * 2, 0);
   var defaultMax = isValueBetween0and1 ? 1 : Math.max(initialValue * 2, 1);
   var defaultStep = isValueBetween0and1 ? 0.01 : 1;
-  var min = config.min === undefined ? defaultMin : config.min;
-  var max = config.max === undefined ? defaultMax : config.max;
-  var step = config.step === undefined ? defaultStep : config.step;
+  this.min = config.min === undefined ? defaultMin : config.min;
+  this.max = config.max === undefined ? defaultMax : config.max;
+  this.mapping = typeof config.mapping !== 'function' ? identity : config.mapping;
+  this.inverseMapping = typeof config.inverseMapping !== 'function' ? identity : config.inverseMapping;
 
-  var mapping = typeof config.mapping !== 'function' ? identity : config.mapping;
-  var inverseMapping = typeof config.inverseMapping !== 'function' ? identity : config.inverseMapping;
+  this.steps = 10
+  if (config.steps !== undefined) {
+    this.steps = config.steps
+  } else if (config.step !== undefined) {
+    this.steps = Math.round((this.max - this.min) / config.step)
+  }
 
   this.type = 'slider';
-  this.min = min;
-  this.max = max;
-  this.step = step;
-
-  var field = this;
-  var fieldGetter = Object.getOwnPropertyDescriptor(field, 'value').get;
-  var fieldSetter = Object.getOwnPropertyDescriptor(field, 'value').set;
-
-  Object.defineProperties(this, {
-    'valueForSlider': {
-      get:  function () {
-        return inverseMapping(fieldGetter.call(field));
-      },
-      set: function (newValue) {
-        return fieldSetter.call(field, mapping(newValue));
-      },
-    },
-  })
 }
 
 Slider.prototype = Object.create(Field.prototype);
