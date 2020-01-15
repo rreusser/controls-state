@@ -372,51 +372,5 @@ test('controls', function (t) {
       t.equal(callCount, 1);
       t.end();
     });
-
-    t.test('mapping and inverseMapping', function (t) {
-      const min = 0.01;
-      const max = 100;
-
-      // from control-panel
-      // function mapping(x) {
-      //   return Math.exp(Math.log(min) + (Math.log(max) - Math.log(min)) * x * 0.01);
-      // }
-      // function inverseMapping(x) {
-      //   return (Math.log(x) - Math.log(min)) / (Math.log(max) - Math.log(min)) * 100;
-      // }
-
-      function mapping(x) {
-        return Math.log(x)
-      }
-
-      function inverseMapping(x) {
-        return Math.exp(x)
-      }
-
-      var slider = Controls.Slider(1, {
-        min,
-        max,
-        mapping,
-        inverseMapping,
-      });
-
-      t.equal(slider.type, 'slider');
-      t.equal(slider.value, 1);
-      t.equal(slider.min, min);
-      t.equal(slider.max, max);
-      t.equal(slider.step, 0.01);
-
-      // test setting the value from the state
-      slider.value = 2;
-      t.equal(slider.value, 2);
-      t.equal(slider.valueForSlider, inverseMapping(2));
-
-      // test setting the value from the slider
-      slider.valueForSlider = 1;
-      t.equal(slider.value, mapping(1));
-      t.equal(slider.valueForSlider, 1);
-
-      t.end();
-    });
   });
 });
