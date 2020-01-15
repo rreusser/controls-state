@@ -1,6 +1,6 @@
 var global = require('global');
 
-function isHTMLElement(element) {
+function isHTMLElement (element) {
   return (global.Element && element instanceof global.Element) ||
     (global.HTMLDocument && element instanceof global.HTMLDocument);
 }
@@ -37,4 +37,4 @@ module.exports = function inferType (value) {
     case 'object':
       return 'object';
   }
-}
+};

@@ -19,21 +19,21 @@ function Field (name, initialValue, parentField, config) {
 
   this.type = null;
   this.name = name;
-  
+
   this.batchedUpdates = {};
   this.batchUpdatePaths = [];
   this.batchUpdateRaf = null;
 
   Object.defineProperties(this, {
-    '$field': {
+    $field: {
       enumerable: false,
       value: this
     },
-    '$config': {
+    $config: {
       enumerable: false,
       value: config
     },
-    'value': {
+    value: {
       get: function () {
         return value;
       },
@@ -66,20 +66,19 @@ function Field (name, initialValue, parentField, config) {
           }
 
           path.unshift(field.name);
-
         } while ((field = field.parent));
 
         value = newValue;
       }
     },
-    'path': {
+    path: {
       enumerable: true,
       get: function () {
         var parentPath = (this.parent || {}).path;
         if (!this.name) return null;
         return (parentPath ? parentPath + '.' : '') + this.name;
       }
-    },
+    }
   });
 }
 

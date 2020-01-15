@@ -68,31 +68,31 @@ function Section (name, inputFields, config, parentField) {
   });
 
   Object.defineProperties(value, {
-    '$field': {
+    $field: {
       enumerable: false,
       value: this
     },
-    '$path': {
+    $path: {
       enumerable: false,
       value: fieldAccessor
     },
-    '$displayFields': {
+    $displayFields: {
       enumerable: false,
       value: displayFields
     }
   });
 
   Object.keys(inputFields).forEach((fieldName) => {
-    var field = displayFields[fieldName]= constructField(fieldName, inputFields[fieldName], this);
+    var enumerable;
+    var field = displayFields[fieldName] = constructField(fieldName, inputFields[fieldName], this);
     var config = field.$config;
 
     if (field.type === 'raw' || field.type === 'button') {
-
-      var enumerable = config.enumerable === undefined ? false : !!config.enumerable;
+      enumerable = config.enumerable === undefined ? false : !!config.enumerable;
 
       Object.defineProperty(value, fieldName, {
         enumerable: enumerable,
-        get: function () { return field.value; },
+        get: function () { return field.value; }
       });
 
       Object.defineProperty(fieldAccessor, fieldName, {
@@ -102,7 +102,7 @@ function Section (name, inputFields, config, parentField) {
     } else if (field.type === 'section' || field.type === 'tabs') {
       fields[fieldName] = field;
 
-      var enumerable = config.enumerable === undefined ? true : !!config.enumerable;
+      enumerable = config.enumerable === undefined ? true : !!config.enumerable;
 
       // For folders, it needs to return the section object with fancy getters and setters
       Object.defineProperty(value, fieldName, {
@@ -118,7 +118,7 @@ function Section (name, inputFields, config, parentField) {
       // For all other properties, it should return the value of the item itself
       fields[fieldName] = field;
 
-      var enumerable = config.enumerable === undefined ? true : !!config.enumerable;
+      enumerable = config.enumerable === undefined ? true : !!config.enumerable;
 
       Object.defineProperty(value, fieldName, {
         enumerable: enumerable,
@@ -168,9 +168,8 @@ function Section (name, inputFields, config, parentField) {
     $offChange: {
       enumerable: false,
       value: this.offChange.bind(this)
-    },
+    }
   });
-
 }
 
 Section.prototype = Object.create(Field.prototype);

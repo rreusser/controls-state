@@ -453,15 +453,15 @@
 	  this.batchUpdateRaf = null;
 
 	  Object.defineProperties(this, {
-	    '$field': {
+	    $field: {
 	      enumerable: false,
 	      value: this
 	    },
-	    '$config': {
+	    $config: {
 	      enumerable: false,
 	      value: config
 	    },
-	    'value': {
+	    value: {
 	      get: function () {
 	        return value;
 	      },
@@ -499,7 +499,7 @@
 	        value = newValue;
 	      }
 	    },
-	    'path': {
+	    path: {
 	      enumerable: true,
 	      get: function () {
 	        var parentPath = (this.parent || {}).path;
@@ -598,7 +598,7 @@
 
 	  field.call(this, name, initialValue, parentField, config);
 
-	  var isValueBetween0and1 = 0 <= initialValue && initialValue <= 1;
+	  var isValueBetween0and1 = initialValue >= 0 && initialValue <= 1;
 	  var defaultMin = isValueBetween0and1 ? 0 : Math.min(initialValue * 2, 0);
 	  var defaultMax = isValueBetween0and1 ? 1 : Math.max(initialValue * 2, 1);
 	  var defaultStep = isValueBetween0and1 ? 0.01 : 1;
@@ -779,27 +779,27 @@
 	  });
 
 	  Object.defineProperties(value, {
-	    '$field': {
+	    $field: {
 	      enumerable: false,
 	      value: this
 	    },
-	    '$path': {
+	    $path: {
 	      enumerable: false,
 	      value: fieldAccessor
 	    },
-	    '$displayFields': {
+	    $displayFields: {
 	      enumerable: false,
 	      value: displayFields
 	    }
 	  });
 
 	  Object.keys(inputFields).forEach(function (fieldName) {
+	    var enumerable;
 	    var field = displayFields[fieldName] = constructField(fieldName, inputFields[fieldName], _this);
 	    var config = field.$config;
 
 	    if (field.type === 'raw' || field.type === 'button') {
-
-	      var enumerable = config.enumerable === undefined ? false : !!config.enumerable;
+	      enumerable = config.enumerable === undefined ? false : !!config.enumerable;
 
 	      Object.defineProperty(value, fieldName, {
 	        enumerable: enumerable,
@@ -816,7 +816,7 @@
 	      });
 	    } else if (field.type === 'section' || field.type === 'tabs') {
 
-	      var enumerable = config.enumerable === undefined ? true : !!config.enumerable;
+	      enumerable = config.enumerable === undefined ? true : !!config.enumerable;
 
 	      // For folders, it needs to return the section object with fancy getters and setters
 	      Object.defineProperty(value, fieldName, {
@@ -830,7 +830,7 @@
 	      });
 	    } else {
 
-	      var enumerable = config.enumerable === undefined ? true : !!config.enumerable;
+	      enumerable = config.enumerable === undefined ? true : !!config.enumerable;
 
 	      Object.defineProperty(value, fieldName, {
 	        enumerable: enumerable,

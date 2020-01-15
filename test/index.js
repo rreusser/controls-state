@@ -5,7 +5,7 @@ var raf = require('raf');
 test('controls', function (t) {
   t.test('field types', function (t) {
     t.test('a string is type textinput', function (t) {
-      var c = Controls({foo: 'bar'});
+      var c = Controls({ foo: 'bar' });
       t.equal(c.$path.foo.type, 'textinput');
       t.end();
     });
@@ -13,9 +13,9 @@ test('controls', function (t) {
 
   t.test('injecting context', function (t) {
     t.test('injects context into already-instantiated controls', function (t) {
-      var s = Controls.Slider({value: 1});
+      var s = Controls.Slider({ value: 1 });
       t.equal(s.path, null);
-      var c = Controls({foo: s});
+      var c = Controls({ foo: s });
       t.equal(c.$path.foo.path, 'foo');
       t.end();
     });
@@ -23,7 +23,7 @@ test('controls', function (t) {
     t.test('throw if you pass the same control multiple times', function (t) {
       t.throws(function () {
         var slider = Controls.Slider();
-        Controls({foo: slider, bar: slider});
+        Controls({ foo: slider, bar: slider });
       }, /You may only add an field to a set of controls once\./);
       t.end();
     });
@@ -32,38 +32,38 @@ test('controls', function (t) {
   t.test('paths', function (t) {
     t.test('fields with a dot throw', function (t) {
       t.throws(function () {
-        Controls({'foo.bar': 5});
+        Controls({ 'foo.bar': 5 });
       }, /may not contain a period/);
       t.end();
     });
 
     t.test('top level paths', function (t) {
-      var c = Controls({foo: 5, bar: 'test'});
+      var c = Controls({ foo: 5, bar: 'test' });
       t.equal(c.$path.foo.path, 'foo');
       t.equal(c.$path.bar.path, 'bar');
       t.end();
     });
 
     t.test('dereferencing a section with $field', function (t) {
-      var c = Controls({size: {width: 480}});
+      var c = Controls({ size: { width: 480 } });
       t.equal(c.$path.size.$field.path, 'size');
       t.end();
     });
 
     t.test('accessing a doubly nested field via $path', function (t) {
-      var c = Controls({size: {width: 480}});
+      var c = Controls({ size: { width: 480 } });
       t.equal(c.$path.size.width.path, 'size.width');
       t.end();
     });
 
     t.test('trivially dereferencing a nested field with $field', function (t) {
-      var c = Controls({size: {width: 480}});
+      var c = Controls({ size: { width: 480 } });
       t.equal(c.$path.size.width.$field.path, 'size.width');
       t.end();
     });
 
     t.test('nested paths', function (t) {
-      var c = Controls({shape: {size: {width: 480}}});
+      var c = Controls({ shape: { size: { width: 480 } } });
       t.equal(c.$path.shape.$field.path, 'shape');
       t.equal(c.$path.shape.size.$field.path, 'shape.size');
       t.equal(c.$path.shape.size.width.path, 'shape.size.width');
@@ -72,14 +72,14 @@ test('controls', function (t) {
     });
 
     t.test('a section gets a name', function (t) {
-      var c = Controls({foo: {name: 'baz'}});
+      var c = Controls({ foo: { name: 'baz' } });
       t.equal(c.$path.foo.$field.name, 'foo');
       t.equal(c.$path.foo.name.$field.name, 'name');
       t.end();
     });
 
     t.test('getting the field object of the top-level section', function (t) {
-      var c = Controls({foo: {name: 'baz'}});
+      var c = Controls({ foo: { name: 'baz' } });
       t.equal(c.$field.name, '');
       t.equal(c.$field.path, null);
       t.end();
@@ -88,14 +88,14 @@ test('controls', function (t) {
 
   t.test('getting values', function (t) {
     t.test('initializes top-level properties', function (t) {
-      var c = Controls({foo: 5, bar: 'test'});
+      var c = Controls({ foo: 5, bar: 'test' });
       t.equal(c.foo, 5);
       t.equal(c.bar, 'test');
       t.end();
     });
 
     t.test('initializes nested properties', function (t) {
-      var c = Controls({shape: {width: 640, height: 480}});
+      var c = Controls({ shape: { width: 640, height: 480 } });
       t.equal(c.shape.width, 640);
       t.equal(c.shape.height, 480);
       t.end();
@@ -104,14 +104,14 @@ test('controls', function (t) {
 
   t.test('accessing controls', function (t) {
     t.test('accessing top level controls', function (t) {
-      var c = Controls({foo: 5, bar: 'test'});
+      var c = Controls({ foo: 5, bar: 'test' });
       t.equal(c.$path.foo.value, 5);
       t.equal(c.$path.bar.value, 'test');
       t.end();
     });
 
     t.test('accessing nested controls', function (t) {
-      var c = Controls({foo: 5, bar: {baz: 'test'}});
+      var c = Controls({ foo: 5, bar: { baz: 'test' } });
       t.equal(c.$path.foo.value, 5);
       t.equal(c.$path.bar.baz.value, 'test');
       t.end();
@@ -120,13 +120,13 @@ test('controls', function (t) {
 
   t.test('enumeration', function (t) {
     t.test('exposes properties as enumerable', function (t) {
-      var c = Controls({foo: 5, bar: 'test'});
+      var c = Controls({ foo: 5, bar: 'test' });
       t.deepEqual(Object.keys(c), ['foo', 'bar']);
       t.end();
     });
 
     t.test('exposes nested properties as enumerable', function (t) {
-      var c = Controls({shape: {width: 640, height: 480}});
+      var c = Controls({ shape: { width: 640, height: 480 } });
       t.deepEqual(Object.keys(c.shape), ['width', 'height']);
       t.end();
     });
@@ -134,7 +134,7 @@ test('controls', function (t) {
 
   t.test('setting values', function (t) {
     t.test('setting a top-level property', function (t) {
-      var c = Controls({foo: 5});
+      var c = Controls({ foo: 5 });
       t.equal(c.foo, 5);
       c.foo = 7;
       t.equal(c.foo, 7);
@@ -142,7 +142,7 @@ test('controls', function (t) {
     });
 
     t.test('setting a nested property', function (t) {
-      var c = Controls({shape: {width: 640}});
+      var c = Controls({ shape: { width: 640 } });
       t.equal(c.shape.width, 640);
       c.shape.width = 1024;
       t.equal(c.shape.width, 1024);
@@ -153,7 +153,7 @@ test('controls', function (t) {
   t.test('events', function (t) {
     t.test('unbound components can have events attached', function (t) {
       var field = Controls.Slider(5);
-      callCount = 0;
+      var callCount = 0;
       field.onBeforeChange(function () {
         callCount++;
       });
@@ -187,7 +187,7 @@ test('controls', function (t) {
     });
 
     t.test('emits onChange events', function (t) {
-      var c = Controls({foo: 5});
+      var c = Controls({ foo: 5 });
 
       var called = false;
       c.$path.foo.onChange(function (event) {
@@ -209,7 +209,7 @@ test('controls', function (t) {
     });
 
     t.test('emits nested change:path events', function (t) {
-      var c = Controls({shape: {width: 120}});
+      var c = Controls({ shape: { width: 120 } });
 
       var called = false;
       c.$path.shape.width.onChange(function (event) {
@@ -231,7 +231,7 @@ test('controls', function (t) {
     });
 
     t.test('can subscribe to events on sections', function (t) {
-      var c = Controls({shape: {width: 120}});
+      var c = Controls({ shape: { width: 120 } });
 
       var callCount = 0;
       c.shape.$onChange(function (event) {
@@ -253,7 +253,7 @@ test('controls', function (t) {
     });
 
     t.test('emits change events', function (t) {
-      var c = Controls({foo: 5});
+      var c = Controls({ foo: 5 });
 
       var called = false;
       c.$onChanges(function (updates) {
@@ -275,7 +275,7 @@ test('controls', function (t) {
     });
 
     t.test('emits nested change events', function (t) {
-      var c = Controls({shape: {width: 120}});
+      var c = Controls({ shape: { width: 120 } });
 
       var called = false;
       c.$onChanges(function (updates) {
@@ -292,7 +292,7 @@ test('controls', function (t) {
     });
 
     t.test('emits batched updates', function (t) {
-      var c = Controls({shape: {width: 320, height: 240}});
+      var c = Controls({ shape: { width: 320, height: 240 } });
 
       var callCount = 0;
       c.$onChanges(function (updates) {
@@ -363,7 +363,7 @@ test('controls', function (t) {
     });
 
     t.test('can attach events', function (t) {
-      var slider = Controls.Slider({name: 'foo'});
+      var slider = Controls.Slider({ name: 'foo' });
       var callCount = 0;
       slider.onBeforeChanges(function (updates) {
         callCount++;
