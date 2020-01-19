@@ -19,7 +19,7 @@ function Field (name, initialValue, parentField, config) {
 
   this.type = null;
   this.name = name;
-  
+
   this.batchedUpdates = {};
   this.batchUpdatePaths = [];
   this.batchUpdateRaf = null;

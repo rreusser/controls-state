@@ -2,9 +2,9 @@
 	typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
 	typeof define === 'function' && define.amd ? define(factory) :
 	(global = global || self, global.State = factory());
-}(this, function () { 'use strict';
+}(this, (function () { 'use strict';
 
-	var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+	var commonjsGlobal = typeof globalThis !== 'undefined' ? globalThis : typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
 
 	function createCommonjsModule(fn, module) {
 		return module = { exports: {} }, fn(module, module.exports), module.exports;
@@ -21,6 +21,7 @@
 
 	var isImplemented$1 = function () {
 		try {
+			Object.keys("primitive");
 			return true;
 		} catch (e) {
 			return false;
@@ -589,6 +590,10 @@
 
 	var slider = Slider;
 
+	function identity(x) {
+	  return x;
+	}
+
 	function Slider(name, initialValue, config, parentField) {
 	  if (!(this instanceof Slider)) return new Slider(name, initialValue, config, parentField);
 
@@ -600,15 +605,19 @@
 	  var isValueBetween0and1 = 0 <= initialValue && initialValue <= 1;
 	  var defaultMin = isValueBetween0and1 ? 0 : Math.min(initialValue * 2, 0);
 	  var defaultMax = isValueBetween0and1 ? 1 : Math.max(initialValue * 2, 1);
-	  var defaultStep = isValueBetween0and1 ? 0.01 : 1;
-	  var min = config.min === undefined ? defaultMin : config.min;
-	  var max = config.max === undefined ? defaultMax : config.max;
-	  var step = config.step === undefined ? defaultStep : config.step;
+	  this.min = config.min === undefined ? defaultMin : config.min;
+	  this.max = config.max === undefined ? defaultMax : config.max;
+	  this.mapping = typeof config.mapping !== 'function' ? identity : config.mapping;
+	  this.inverseMapping = typeof config.inverseMapping !== 'function' ? identity : config.inverseMapping;
+
+	  this.steps = 10;
+	  if (config.steps !== undefined) {
+	    this.steps = config.steps;
+	  } else if (config.step !== undefined) {
+	    this.steps = Math.round((this.max - this.min) / config.step);
+	  }
 
 	  this.type = 'slider';
-	  this.min = min;
-	  this.max = max;
-	  this.step = step;
 	}
 
 	Slider.prototype = Object.create(field.prototype);
@@ -955,4 +964,4 @@
 
 	return src;
 
-}));
+})));
