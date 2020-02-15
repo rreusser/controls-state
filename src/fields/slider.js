@@ -25,11 +25,11 @@ function Slider (name, initialValue, config, parentField) {
   this.mapping = typeof config.mapping !== 'function' ? identity : config.mapping;
   this.inverseMapping = typeof config.inverseMapping !== 'function' ? identity : config.inverseMapping;
 
-  this.steps = 10
+  this.steps = Math.round((this.max - this.min) / defaultStep);
   if (config.steps !== undefined) {
-    this.steps = config.steps
+    this.steps = config.steps;
   } else if (config.step !== undefined) {
-    this.steps = Math.round((this.max - this.min) / config.step)
+    this.steps = Math.round((this.max - this.min) / config.step);
   }
 
   this.type = 'slider';
